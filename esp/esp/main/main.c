@@ -1,49 +1,58 @@
 #include <stdio.h>
-#include "mpu6050/mpu6050.c"
+#include "esp_err.h"
 #include "esp_log.h"
+#include "esp_wifi_types_generic.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-
-#define I2C_MASTER_SCL_IO 22        /*!< GPIO number for I2C master clock */
-#define I2C_MASTER_SDA_IO 21        /*!< GPIO number for I2C master data */
-#define I2C_MASTER_NUM I2C_NUM_0    /*!< I2C master port number */
-#define I2C_MASTER_FREQ_HZ 100000   /*!< I2C master clock frequency */
+#include "esp_wifi.h"
+#include "mpu.c"
 
 void app_main(void) {
-    esp_err_t ret = mpu6050_init(I2C_MASTER_SCL_IO, I2C_MASTER_SDA_IO,I2C_MASTER_FREQ_HZ, I2C_MASTER_NUM);
+    wifi_init_config_t config = WIFI_INIT_CONFIG_DEFAULT();
+
+    wifi_config_t new_wifi_config = {
+        .ap = {
+            .ssid = "MyESP32Network",         // Network Name (Max 32 chars)
+            .ssid_len = 0,                     // Length of SSID (0 = auto-calculate)
+            .password = "password123",         // Password (8-63 chars for WPA2)
+            .channel = 1,                      // WiFi Channel (1-13)
+            .authmode = WIFI_AUTH_WPA2_PSK,    // Authentication Mode
+            .ssid_hidden = 0,                  // Broadcast SSID (0=No, 1=Yes)
+            .max_connection = 4,               // Max clients (1-10)
+            .beacon_interval = 100,            // Beacon interval (ms, 100-60000)
+            // .pairwise_cipher = WIFI_CIPHER_TYPE_CCMP, // Optional: Specific cipher for WPA2/WPA3
+            // .pmf_cfg = { .required = false }, // Optional: Protected Management Frames
+        },
+    };
+
+    esp_netif_t* ap_netif = esp_netif_create_default_wifi_ap();
+
+
+
+    esp_err_t ret = esp_wifi_init(&config);
     if (ret != ESP_OK) {
-        ESP_LOGE("APP", "MPU6050 initialization failed");
+        ESP_LOGE("APP", "FAILED TO INIT WIFI!!!");
         return;
     }
-    
 
-    float ax, ay, az, gx, gy, gz;
-    float roll, pitch;
+    esp_wifi_set_mode(WIFI_MODE_STA);
+
+    esp_wifi_set_config(wifi_interface_t interface, wifi_config_t *conf)
+
+    ret = esp_wifi_start();
+
+    if (ret != ESP_OK) {
+        ESP_LOGE("APP", "FAILED TO START WIFI STATION!!!");
+        return;
+    }
+
 
 
     while (1) {
-        ret = mpu6050_read_accel(&ax, &ay, &az);
-        if (ret == ESP_OK) {
-            ESP_LOGI("APP", "Acceleration X: %.2f, Y: %.2f, Z: %.2f", ax, ay, az);
-            roll = calculate_roll(ax, ay, az);
-            pitch = calculate_pitch(ax, ay, az);
-            ESP_LOGI("APP", "Roll: %.2f, Pitch: %.2f", roll, pitch);
-        } else {
-            ESP_LOGE("APP", "Failed to read acceleration data");
-        }
-
-        ret = mpu6050_read_gyro(&gx, &gy, &gz);
-        if (ret == ESP_OK) {
-            ESP_LOGI("APP", "Gyro X: %.2f, Y: %.2f, Z: %.2f", gx, gy, gz);
-       
-
-            
-            
-        } else {
-            ESP_LOGE("APP", "Failed to read gyroscope data");
-        }
+        
 
         vTaskDelay(500 / portTICK_PERIOD_MS);
         printf("\n");
     }
 }
+

@@ -1,4 +1,7 @@
 idf_component_register(SRCS "mpu6050.c"
                     INCLUDE_DIRS "include"
-                    REQUIRES driver)
+                    REQUIRES driver
+                    REQUIRES esp_wifi)
+
+                    
 
