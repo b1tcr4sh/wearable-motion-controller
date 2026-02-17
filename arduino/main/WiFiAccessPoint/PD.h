@@ -44,7 +44,7 @@ class PD { // abstraction for PD patch
       accepting = false;
     }
 
-    bool accepting = false;
+    bool accepting = true;
     IPAddress senderAddr; // array of bytes for sender's address.
     unsigned int receivePort;
     unsigned int sendPort;
