@@ -1,29 +1,30 @@
 #include <WiFi.h>
 #include <NetworkClient.h>
 #include <WiFiAP.h>
+#include <WiFiUdp.h>
+#include <MicroOscUdp.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
-#include "PD.h"
 
 // Set these to your desired credentials.
-const char *ssid = "espMPU";
-const char *password = "12345678";
   // You can remove the password parameter if you want the AP to be open.
   // a valid password must have more than 7 characters
+const char *ssid = "espMPU";
+const char *password = "12345678";
 
-// Your computer is expected to be this address to receive data
 const IPAddress destAddr(192, 168, 4, 2);
 const unsigned int serverPort = 10000;
 const unsigned int destPort = 12000;
+  
+bool accepting = false;
+float accelXOffset = 0;
+float accelYOffset = 0;
+float accelZOffset = 0;
 
 WiFiUDP udp;
 MicroOscUdp<1024> osc(&udp, destAddr, destPort);
-
 Adafruit_MPU6050 mpu;
-
-
-PD pd(&osc, serverPort, destPort);
 
 void setup() {
   Serial.begin(115200);
@@ -39,7 +40,6 @@ void setup() {
 
   Serial.println("Configuring access point...");
   bool ret = startAP();
-  
 
   if (!ret) {
     log_e("Soft AP creation failed.");
@@ -48,22 +48,22 @@ void setup() {
 
   // WiFi.onEvent(WiFiStationConnected, WIFI_EVENT_AP_STACONNECTED);  
 
-  pd.Begin(&udp);
+  udp.begin(serverPort);
   Serial.println("Listening for OSC messages...");
   delay(5000);
 }
 
 void loop() {
-  // pd.CheckForMessage(); // won't receive shit
+  osc.onOscMessageReceived(OscMessageParser); // Checks for incoming OSC messages
 
   sensors_event_t accel, gyro, temp;
   mpu.getEvent(&accel, &gyro, &temp);
 
-  float x = accel.acceleration.x / 16384.0;
-  float y = accel.acceleration.y / 16384.0;
-  float z = accel.acceleration.z / 16384.0;
+  float x = ( accel.acceleration.x / 16384.0 ) - accelXOffset;
+  float y = ( accel.acceleration.y / 16384.0 ) - accelYOffset;
+  float z = ( accel.acceleration.z / 16384.0 ) - accelZOffset;
 
-  if (pd.SendGyroData(x, y, z)) {
+  if (SendGyroData(x, y, z)) {
     Serial.println("Sent gyro data");
   }
 
@@ -71,12 +71,96 @@ void loop() {
   y = gyro.gyro.y / 131.0;
   z = gyro.gyro.z / 131.0;
 
-  if (pd.SendAccelData(x, y, z)) {
+  if (SendAccelData(x, y, z)) {
     Serial.println("Sent accel data");
   }
 
   delay(100);
-  
+}
+
+bool startAP() {
+  if (!WiFi.softAP(ssid, password)) {
+    return false;
+  }
+  IPAddress myIP = WiFi.softAPIP();
+  Serial.print("AP IP address: ");
+  Serial.println(myIP);
+
+  return true;
+}
+
+void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHEN AN OSC MESSAGE IS RECEIVED:
+  if (mes.checkOscAddress("/esp/start")) {
+    if (!accepting) 
+      StartSending();
+  }
+
+  if (mes.checkOscAddress("/esp/stop")) {
+    if (accepting) 
+      StopSending();
+  }
+
+  if (mes.checkOscAddress("/esp/calibrate")) {
+    Calibrate();
+  }
+
+}
+
+void StartSending() {  
+  Serial.println("_____Sending data naow....______");
+  accepting = true;
+}
+
+void StopSending() {
+  Serial.println("_____Stop data send_____");
+  accepting = false;
+}
+
+bool SendGyroData(float x, float y, float z) {
+  if (!accepting) {
+    return false;
+  }
+
+  osc.sendFloat("/esp/gyro/x", x);
+  osc.sendFloat("/esp/gyro/y", y);
+  osc.sendFloat("/esp/gyro/z", z);
+
+  return true;
+}
+
+bool SendAccelData(float x, float y, float z) {
+  if (!accepting) {
+    return false;
+  }
+
+  osc.sendFloat("/esp/accel/x", x);
+  osc.sendFloat("/esp/accel/y", y);
+  osc.sendFloat("/esp/accel/z", z);
+
+  return true;
+}
+
+void Calibrate() {
+  float xSum = 0, ySum = 0, zSum = 0;
+
+  Serial.println("Calibrating...");
+
+  for (int i = 0; i < 200; i++) {
+    sensors_event_t accel, gyro, temp;
+    mpu.getEvent(&accel, &gyro, &temp);
+
+    xSum += accel.acceleration.x;
+    ySum += accel.acceleration.y;
+    zSum += accel.acceleration.z;
+
+    delay(5);
+  }
+
+  accelXOffset = xSum / 200;
+  accelYOffset = ySum / 200;
+  accelZOffset = zSum / 200;
+
+  Serial.println("Done!");
 }
 
 void setupMPU() {
@@ -138,19 +222,4 @@ void setupMPU() {
     Serial.println("5 Hz");
     break;
   }
-}
-
-bool startAP() {
-  if (!WiFi.softAP(ssid, password)) {
-    return false;
-  }
-  IPAddress myIP = WiFi.softAPIP();
-  Serial.print("AP IP address: ");
-  Serial.println(myIP);
-
-  return true;
-}
-
-void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info){
-  Serial.println("Station connected");
 }
