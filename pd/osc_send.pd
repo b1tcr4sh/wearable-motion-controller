@@ -1,0 +1,11 @@
+#N canvas 827 239 527 327 12;
+#X obj 258 209 oscformat;
+#X obj 258 262 list prepend send;
+#X obj 258 299 list trim;
+#X obj 258 400 netsend -u -b;
+#X msg 445 310 connect localhost 6666;
+#X msg 445 349 disconnect;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 5 0 3 0;

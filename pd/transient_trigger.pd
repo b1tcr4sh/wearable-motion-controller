@@ -1,0 +1,18 @@
+#N canvas 827 239 527 327 12;
+#X obj 103 46 fluid.transientslice~;
+#X obj 103 80 threshold~ 0.5 1 0.1 1;
+#X obj 103 154 bng 25 250 50 0 empty empty empty 17 7 0 10 #000000 #ffffff #ffffff;
+#X obj 103 5 inlet~;
+#X obj 103 208 outlet;
+#X obj 1 35 bng 42 250 50 0 empty empty empty 17 7 0 10 #000000 #ffffff #ffffff;
+#X text 1 3 trans trigger;
+#X obj 103 117 spigot;
+#X obj 207 5 inlet;
+#X connect 0 0 1 0;
+#X connect 1 0 7 0;
+#X connect 2 0 4 0;
+#X connect 2 0 5 0;
+#X connect 3 0 0 0;
+#X connect 7 0 2 0;
+#X connect 8 0 7 1;
+#X coords 0 0 1 1 85 78 2 0 0;
