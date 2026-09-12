@@ -11,7 +11,10 @@
   // You can remove the password parameter if you want the AP to be open.
   // a valid password must have more than 7 characters
 const char *ssid = "espMPU";
-const char *password = "12345678";
+const char *password = "eightchars";
+
+const int movementThreshold = 0.1;
+const int movementDurationThreshold = 20;
 
 const IPAddress destAddr(192, 168, 4, 2);
 const unsigned int serverPort = 10000;
@@ -21,6 +24,13 @@ bool accepting = false;
 float accelXOffset = 0;
 float accelYOffset = 0;
 float accelZOffset = 0;
+
+float x;
+float y;
+float z;
+
+bool sentGyro = false;
+bool sentAccel = false;
 
 WiFiUDP udp;
 MicroOscUdp<1024> osc(&udp, destAddr, destPort);
@@ -56,23 +66,32 @@ void setup() {
 void loop() {
   osc.onOscMessageReceived(OscMessageParser); // Checks for incoming OSC messages
 
-  sensors_event_t accel, gyro, temp;
-  mpu.getEvent(&accel, &gyro, &temp);
+  if(mpu.getMotionInterruptStatus()) {
+    sensors_event_t accel, gyro, temp;
+    mpu.getEvent(&accel, &gyro, &temp);
 
-  float x = ( accel.acceleration.x / 16384.0 ) - accelXOffset;
-  float y = ( accel.acceleration.y / 16384.0 ) - accelYOffset;
-  float z = ( accel.acceleration.z / 16384.0 ) - accelZOffset;
+    x = ( accel.acceleration.x /*/ 16384.0 */) - accelXOffset;
+    y = ( accel.acceleration.y /* / 16384.0 */) - accelYOffset;
+    z = ( accel.acceleration.z /* / 16384.0 */) - accelZOffset;
 
-  if (SendGyroData(x, y, z)) {
-    Serial.println("Sent gyro data");
-  }
+    if (SendGyroData(x, y, z)) {
+      sentGyro = true;
+    }
 
-  x = gyro.gyro.x / 131.0;
-  y = gyro.gyro.y / 131.0;
-  z = gyro.gyro.z / 131.0;
+    x = gyro.gyro.x / 131.0;
+    y = gyro.gyro.y / 131.0;
+    z = gyro.gyro.z / 131.0;
 
-  if (SendAccelData(x, y, z)) {
-    Serial.println("Sent accel data");
+    if (SendAccelData(x, y, z)) {
+      sentAccel = true;
+    }
+
+    if (sentGyro && sentAccel) {
+      Serial.printf("Sent gyro: %f, %f, %f; accel: %f, %f, %f\n", accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, gyro.gyro.x, gyro.gyro.y, gyro.gyro.z);
+    }
+
+    sentGyro = false;
+    sentAccel = false;
   }
 
   delay(100);
@@ -164,7 +183,15 @@ void Calibrate() {
 }
 
 void setupMPU() {
-  mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
+  // mpu.setHighPassFilter(MPU6050_HIGHPASS_0_63_HZ);
+  mpu.setMotionDetectionThreshold(movementThreshold);
+  mpu.setMotionDetectionDuration(movementDurationThreshold);
+  mpu.setInterruptPinLatch(true);	// Keep it latched.  Will turn off when reinitialized.
+  mpu.setInterruptPinPolarity(true);
+  mpu.setMotionInterrupt(true);
+
+
+  mpu.setAccelerometerRange(MPU6050_RANGE_4_G);
   Serial.print("Accelerometer range set to: ");
   switch (mpu.getAccelerometerRange()) {
   case MPU6050_RANGE_2_G:
@@ -197,7 +224,7 @@ void setupMPU() {
     break;
   }
 
-  mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
+  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
   Serial.print("Filter bandwidth set to: ");
   switch (mpu.getFilterBandwidth()) {
   case MPU6050_BAND_260_HZ:
