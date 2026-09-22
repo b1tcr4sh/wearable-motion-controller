@@ -6,6 +6,10 @@
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
+#include <Adafruit_NeoPixel.h>
+
+#define led_count 10
+#define led_pin 9
 
 // Set these to your desired credentials.
   // You can remove the password parameter if you want the AP to be open.
@@ -35,6 +39,8 @@ bool sentAccel = false;
 WiFiUDP udp;
 MicroOscUdp<1024> osc(&udp, destAddr, destPort);
 Adafruit_MPU6050 mpu;
+
+Adafruit_NeoPixel leds(led_count, led_pin, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   Serial.begin(115200);
@@ -109,19 +115,29 @@ bool startAP() {
 }
 
 void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHEN AN OSC MESSAGE IS RECEIVED:
-  if (mes.checkOscAddress("/esp/start")) {
+  if (mes.checkOscAddress("/imu/start")) {
     if (!accepting) 
       StartSending();
   }
 
-  if (mes.checkOscAddress("/esp/stop")) {
+  if (mes.checkOscAddress("/imu/stop")) {
     if (accepting) 
       StopSending();
   }
 
-  if (mes.checkOscAddress("/esp/calibrate")) {
+  if (mes.checkOscAddress("/imu/calibrate")) {
     Calibrate();
   }
+
+  if (mes.checkOscAddressAndTypeTags("/led/set", "is")) {
+    // int for index and string for hex
+    // need function to convert from string to RGB bytes
+  }
+
+  if (mes.checkOscAddress("/led/off")) {
+    // need a function to blackout the strip
+  }
+
 
 }
 
