@@ -129,16 +129,32 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
     Calibrate();
   }
 
-  if (mes.checkOscAddressAndTypeTags("/led/set", "is")) {
-    // int for index and string for hex
-    // need function to convert from string to RGB bytes
+  if (mes.checkOscAddressAndTypeTags("/led/set", "iiiii")) {
+    int index = mes.nextAsInt();
+    int r = mes.nextAsInt(); // 0 - 255
+    int g = mes.nextAsInt(); // 0 - 255
+    int b = mes.nextAsInt(); // 0 - 255
+    int brightness = mes.nextAsInt(); // 0 - 100 ?
+
+    SetLeds(index, r, g, b, brightness); 
   }
 
   if (mes.checkOscAddress("/led/off")) {
-    // need a function to blackout the strip
+    Blackout();
   }
+}
 
+void SetLeds(int index, int red, int green, int blue, int brightness) {
+  leds.setPixelColor(index, red, green, blue);
+  leds.setBrightness(brightness);
+  leds.show();
+}
 
+void Blackout() {
+  for (int i = 0; i < led_count; i++) {
+      leds.setPixelColor(i, 0);
+      leds.show();
+  }
 }
 
 void StartSending() {  
