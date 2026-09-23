@@ -7,6 +7,7 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 #include <Adafruit_NeoPixel.h>
+#include <FastLED.h>
 
 #define led_count 10
 #define led_pin 9
@@ -40,7 +41,8 @@ WiFiUDP udp;
 MicroOscUdp<1024> osc(&udp, destAddr, destPort);
 Adafruit_MPU6050 mpu;
 
-Adafruit_NeoPixel leds(led_count, led_pin, NEO_GRB + NEO_KHZ800);
+// Adafruit_NeoPixel leds(led_count, led_pin, NEO_GRB + NEO_KHZ800);
+CRGB leds[led_count];
 
 void setup() {
   Serial.begin(115200);
@@ -66,8 +68,11 @@ void setup() {
 
   udp.begin(serverPort);
   Serial.println("Listening for OSC messages...");
+
+  FastLED.addLeds<WS2812B, led_pin, GRB>(leds, led_count);
+
   delay(5000);
-}
+
 
 void loop() {
   osc.onOscMessageReceived(OscMessageParser); // Checks for incoming OSC messages
@@ -145,14 +150,13 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
 }
 
 void SetLeds(int index, int red, int green, int blue, int brightness) {
-  leds.setPixelColor(index, red, green, blue);
-  leds.setBrightness(brightness);
+  leds[index] = CRGB(red, green, blue);
   leds.show();
 }
 
 void Blackout() {
   for (int i = 0; i < led_count; i++) {
-      leds.setPixelColor(i, 0);
+      fill_solid(leds, led_count, CRGB(0, 0, 0));
       leds.show();
   }
 }
