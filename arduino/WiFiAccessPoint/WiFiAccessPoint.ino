@@ -6,11 +6,14 @@
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
-#include <Adafruit_NeoPixel.h>
+#include <Arduino.h>
+// #include <Adafruit_NeoPixel.h>
 #include <FastLED.h>
 
-#define led_count 10
-#define led_pin 9
+#define LED_PIN     5           // Data pin number
+#define NUM_LEDS    60          // Number of LEDs
+#define LED_TYPE    WS2812B     // Your LED strip type
+#define COLOR_ORDER GRB         // Color channel order
 
 // Set these to your desired credentials.
   // You can remove the password parameter if you want the AP to be open.
@@ -41,8 +44,7 @@ WiFiUDP udp;
 MicroOscUdp<1024> osc(&udp, destAddr, destPort);
 Adafruit_MPU6050 mpu;
 
-// Adafruit_NeoPixel leds(led_count, led_pin, NEO_GRB + NEO_KHZ800);
-CRGB leds[led_count];
+CRGB leds[NUM_LEDS];
 
 void setup() {
   Serial.begin(115200);
@@ -69,10 +71,11 @@ void setup() {
   udp.begin(serverPort);
   Serial.println("Listening for OSC messages...");
 
-  FastLED.addLeds<WS2812B, led_pin, GRB>(leds, led_count);
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
 
   delay(5000);
 
+}
 
 void loop() {
   osc.onOscMessageReceived(OscMessageParser); // Checks for incoming OSC messages
@@ -151,13 +154,13 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
 
 void SetLeds(int index, int red, int green, int blue, int brightness) {
   leds[index] = CRGB(red, green, blue);
-  leds.show();
+  FastLED.show();
 }
 
 void Blackout() {
-  for (int i = 0; i < led_count; i++) {
-      fill_solid(leds, led_count, CRGB(0, 0, 0));
-      leds.show();
+  for (int i = 0; i < NUM_LEDS; i++) {
+      fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));
+      FastLED.show();
   }
 }
 
