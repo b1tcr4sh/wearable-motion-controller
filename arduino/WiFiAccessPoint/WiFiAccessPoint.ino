@@ -10,8 +10,8 @@
 // #include <Adafruit_NeoPixel.h>
 #include <FastLED.h>
 
-#define LED_PIN     5           // Data pin number
-#define NUM_LEDS    60          // Number of LEDs
+#define LED_PIN     25           // Data pin number
+#define NUM_LEDS    30          // Number of LEDs
 #define LED_TYPE    WS2812B     // Your LED strip type
 #define COLOR_ORDER GRB         // Color channel order
 
@@ -50,6 +50,8 @@ void setup() {
   Serial.begin(115200);
   Serial.println();
 
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+
   if (!mpu.begin()) {
     Serial.println("Failed to find MPU6050 chip");
     return;
@@ -70,8 +72,6 @@ void setup() {
 
   udp.begin(serverPort);
   Serial.println("Listening for OSC messages...");
-
-  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
 
   delay(5000);
 
@@ -138,6 +138,8 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
   }
 
   if (mes.checkOscAddressAndTypeTags("/led/set", "iiiii")) {
+    Serial.println("changing leds...");
+
     int index = mes.nextAsInt();
     int r = mes.nextAsInt(); // 0 - 255
     int g = mes.nextAsInt(); // 0 - 255
@@ -148,6 +150,7 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
   }
 
   if (mes.checkOscAddress("/led/off")) {
+    Serial.println("blacking out strip...");
     Blackout();
   }
 }
@@ -179,9 +182,9 @@ bool SendGyroData(float x, float y, float z) {
     return false;
   }
 
-  osc.sendFloat("/esp/gyro/x", x);
-  osc.sendFloat("/esp/gyro/y", y);
-  osc.sendFloat("/esp/gyro/z", z);
+  osc.sendFloat("/imu/gyro/x", x);
+  osc.sendFloat("/imu/gyro/y", y);
+  osc.sendFloat("/imu/gyro/z", z);
 
   return true;
 }
@@ -191,9 +194,9 @@ bool SendAccelData(float x, float y, float z) {
     return false;
   }
 
-  osc.sendFloat("/esp/accel/x", x);
-  osc.sendFloat("/esp/accel/y", y);
-  osc.sendFloat("/esp/accel/z", z);
+  osc.sendFloat("/imu/accel/x", x);
+  osc.sendFloat("/imu/accel/y", y);
+  osc.sendFloat("/imu/accel/z", z);
 
   return true;
 }
