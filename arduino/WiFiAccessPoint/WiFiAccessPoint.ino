@@ -227,7 +227,7 @@ void setupMPU() {
   mpu.setMotionInterrupt(true);
 
 
-  mpu.setAccelerometerRange(MPU6050_RANGE_4_G);
+  mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
   Serial.print("Accelerometer range set to: ");
   switch (mpu.getAccelerometerRange()) {
   case MPU6050_RANGE_2_G:
