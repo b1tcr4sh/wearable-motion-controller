@@ -13,6 +13,17 @@
         "boxes": [
             {
                 "box": {
+                    "id": "obj-2",
+                    "maxclass": "newobj",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [ "bang" ],
+                    "patching_rect": [ 1164.8648127913475, 197.8378289937973, 61.0, 22.0 ],
+                    "text": "delay 100"
+                }
+            },
+            {
+                "box": {
                     "id": "obj-51",
                     "maxclass": "button",
                     "numinlets": 1,
@@ -316,6 +327,12 @@
             },
             {
                 "patchline": {
+                    "destination": [ "obj-47", 0 ],
+                    "source": [ "obj-2", 0 ]
+                }
+            },
+            {
+                "patchline": {
                     "destination": [ "obj-10", 0 ],
                     "source": [ "obj-20", 0 ]
                 }
@@ -408,32 +425,20 @@
             },
             {
                 "patchline": {
-                    "destination": [ "obj-39", 0 ],
-                    "source": [ "obj-42", 0 ]
-                }
-            },
-            {
-                "patchline": {
-                    "destination": [ "obj-35", 0 ],
-                    "source": [ "obj-45", 0 ]
-                }
-            },
-            {
-                "patchline": {
                     "destination": [ "obj-42", 0 ],
                     "source": [ "obj-45", 1 ]
                 }
             },
             {
                 "patchline": {
-                    "destination": [ "obj-4", 0 ],
-                    "source": [ "obj-46", 1 ]
+                    "destination": [ "obj-2", 0 ],
+                    "source": [ "obj-46", 0 ]
                 }
             },
             {
                 "patchline": {
-                    "destination": [ "obj-47", 1 ],
-                    "source": [ "obj-46", 0 ]
+                    "destination": [ "obj-4", 0 ],
+                    "source": [ "obj-46", 1 ]
                 }
             },
             {
