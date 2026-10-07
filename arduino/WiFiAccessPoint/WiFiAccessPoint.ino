@@ -33,9 +33,12 @@ float accelXOffset = 0;
 float accelYOffset = 0;
 float accelZOffset = 0;
 
-float x;
-float y;
-float z;
+float accelx;
+float accely;
+float accelz;
+float gyrox;
+float gyroy;
+float gyroz;
 
 bool sentGyro = false;
 bool sentAccel = false;
@@ -84,28 +87,23 @@ void loop() {
     sensors_event_t accel, gyro, temp;
     mpu.getEvent(&accel, &gyro, &temp);
 
-    x = ( accel.acceleration.x /*/ 16384.0 */) - accelXOffset;
-    y = ( accel.acceleration.y /* / 16384.0 */) - accelYOffset;
-    z = ( accel.acceleration.z /* / 16384.0 */) - accelZOffset;
+    accelx = ( accel.acceleration.x /*/ 16384.0 */) - accelXOffset;
+    accely = ( accel.acceleration.y /* / 16384.0 */) - accelYOffset;
+    accelz = ( accel.acceleration.z /* / 16384.0 */) - accelZOffset;
 
-    if (SendGyroData(x, y, z)) {
-      sentGyro = true;
+    gyrox = gyro.gyro.x / 131.0;
+    gyroy = gyro.gyro.y / 131.0;
+    gyroz = gyro.gyro.z / 131.0;
+
+    if (SendData(accelx, accely, accelz, gyrox, gyroy, gyroz)) {
+      sentData = true;
     }
 
-    x = gyro.gyro.x / 131.0;
-    y = gyro.gyro.y / 131.0;
-    z = gyro.gyro.z / 131.0;
-
-    if (SendAccelData(x, y, z)) {
-      sentAccel = true;
-    }
-
-    if (sentGyro && sentAccel) {
+    if (sentData) {
       Serial.printf("Sent gyro: %f, %f, %f; accel: %f, %f, %f\n", accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, gyro.gyro.x, gyro.gyro.y, gyro.gyro.z);
     }
 
-    sentGyro = false;
-    sentAccel = false;
+    sentData = false;
   }
 
   delay(100);
@@ -153,6 +151,22 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
     Serial.println("blacking out strip...");
     Blackout();
   }
+
+  if (mes.checkOscAddress("/led/all", "iiii")) {
+    int r = mes.nextAsInt(); // 0 - 255
+    int g = mes.nextAsInt(); // 0 - 255
+    int b = mes.nextAsInt(); // 0 - 255
+    int brightness = mes.nextAsInt(); // 0 - 100 ?
+
+    SetAll(r, g, b, brightness);
+  }
+}
+
+void SetAll(int red, int green, int blue, int brightness) {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[index] = CRGB(red, green, blue);
+  }
+  FastLED.show();
 }
 
 void SetLeds(int index, int red, int green, int blue, int brightness) {
@@ -197,6 +211,16 @@ bool SendAccelData(float x, float y, float z) {
   osc.sendFloat("/imu/accel/x", x);
   osc.sendFloat("/imu/accel/y", y);
   osc.sendFloat("/imu/accel/z", z);
+
+  return true;
+}
+
+bool SendData(float accel_x, float accel_y, float accel_z, float gyro_x, float gyro_y, float gyro_z) { // send data as one blob
+  if (!accepting) {
+    return false;
+  }
+
+  osc.sendMessage("/imu/data", "ffffff", accel_x, accel_y, accel_z, gyro_x, gyro_y, gyro_z);
 
   return true;
 }
