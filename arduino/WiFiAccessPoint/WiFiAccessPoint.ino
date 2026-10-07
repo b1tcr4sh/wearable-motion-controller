@@ -40,8 +40,7 @@ float gyrox;
 float gyroy;
 float gyroz;
 
-bool sentGyro = false;
-bool sentAccel = false;
+bool sentData = false;
 
 WiFiUDP udp;
 MicroOscUdp<1024> osc(&udp, destAddr, destPort);
@@ -164,7 +163,7 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
 
 void SetAll(int red, int green, int blue, int brightness) {
   for (int i = 0; i < NUM_LEDS; i++) {
-    leds[index] = CRGB(red, green, blue);
+    leds[i] = CRGB(red, green, blue);
   }
   FastLED.show();
 }
