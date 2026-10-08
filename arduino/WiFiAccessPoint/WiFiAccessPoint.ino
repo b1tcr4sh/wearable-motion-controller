@@ -154,13 +154,22 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
     Blackout();
   }
 
-  if (mes.checkOscAddress("/led/all", "iiii")) {
+  if (mes.checkOscAddressAndTypeTags("/led/all", "iiii")) {
     int r = mes.nextAsInt(); // 0 - 255
     int g = mes.nextAsInt(); // 0 - 255
     int b = mes.nextAsInt(); // 0 - 255
     int brightness = mes.nextAsInt(); // 0 - 100 ?
 
     SetAll(r, g, b, brightness);
+  }
+
+  if (mes.checkOscAddressAndTypeTags("/led/set/state", "b")) {
+    // blob of 90 bytes (30 sets of 3 each for RGB)
+    
+
+    for (int i = 0; i < 30; i++) {
+      byte r = 
+    }
   }
 }
 
