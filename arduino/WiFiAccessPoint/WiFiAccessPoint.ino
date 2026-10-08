@@ -163,14 +163,7 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
     SetAll(r, g, b, brightness);
   }
 
-  if (mes.checkOscAddressAndTypeTags("/led/set/state", "b")) {
-    // blob of 90 bytes (30 sets of 3 each for RGB)
-    
-
-    for (int i = 0; i < 30; i++) {
-      byte r = 
-    }
-  }
+  // receive blob at /led/set/state that contains some number of led states, each 4 bytes (i, R, G, B)
 }
 
 void SetAll(int red, int green, int blue, int brightness) {

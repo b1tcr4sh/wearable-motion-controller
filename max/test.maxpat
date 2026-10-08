@@ -805,7 +805,15 @@
             },
             {
                 "patchline": {
+                    "destination": [ "obj-14", 0 ],
+                    "order": 0,
+                    "source": [ "obj-86", 0 ]
+                }
+            },
+            {
+                "patchline": {
                     "destination": [ "obj-8", 0 ],
+                    "order": 1,
                     "source": [ "obj-86", 0 ]
                 }
             },
