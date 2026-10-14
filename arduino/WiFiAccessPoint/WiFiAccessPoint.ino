@@ -33,8 +33,8 @@ float accelXOffset = 0;
 float accelYOffset = 0;
 float accelZOffset = 0;
 float gyroXOffset = 0;
-float gyroyOffset = 0;
-float gyrozOffset = 0;
+float gyroYOffset = 0;
+float gyroZOffset = 0;
 
 float accelx;
 float accely;
@@ -108,7 +108,7 @@ void loop() {
     sentData = false;
   }
 
-  delay(100);
+  delay(30);
 }
 
 bool startAP() {
@@ -163,14 +163,30 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
     SetAll(r, g, b, brightness);
   }
 
-  // receive blob at /led/set/state that contains some number of led states, each 4 bytes (i, R, G, B)
+  // receive blob at /led/set/state that contains some number of led states, each 3 bytes (R, G, B)
   if (mes.checkOscAddressAndTypeTags("/led/set/state", "b")) {
-    const uint8_t* data;
-    int len = mes.nextAsBlob(data);
+    const uint8_t* data; // pointer to the pointer of the first byte
 
-    for (int i = 0; i < 90; i++) {
-      
+    int len = mes.nextAsBlob(&data);
+
+    Serial.printf("Got %d bytes of data on /led/set/state\n", len);
+
+    if (data == NULL || len == 0) {
+      Serial.println("There was an error receiving data on /led/set/state");
+      return;
     }
+
+    int led = 0;
+    for (int i = 0; i < len - 2; i += 3) { // do for every led
+      uint8_t r = *(data + i); // get first value in 3 byte chunk
+      uint8_t g = *(data + i + 1); // 2nd
+      uint8_t b = *(data + i + 2); // 3rd
+
+      leds[led] = CRGB(r, g, b); // set LEDs buffer
+      led++;
+    }
+
+    FastLED.show(); // then upate the strip
   }
 }
 
@@ -265,8 +281,8 @@ void Calibrate() {
     sensors_event_t accel, gyro, temp;
     mpu.getEvent(&accel, &gyro, &temp);
 
-    xSum += gyro.gyro.x
-    ySum += gyro.gyro.y
+    xSum += gyro.gyro.x;
+    ySum += gyro.gyro.y;
     zSum += gyro.gyro.z;
 
     delay(5);
