@@ -13,15 +13,24 @@
         "boxes": [
             {
                 "box": {
-                    "fontsize": 18.0,
-                    "id": "obj-250",
-                    "linecount": 8,
-                    "maxclass": "comment",
+                    "id": "obj-25",
+                    "maxclass": "message",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [ "" ],
+                    "patching_rect": [ 714.2857074737549, 369.38775157928467, 50.0, 22.0 ],
+                    "text": "30"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-23",
+                    "maxclass": "newobj",
                     "numinlets": 1,
-                    "numoutlets": 0,
-                    "patching_rect": [ 506.36361825466156, 32.72727155685425, 705.0, 172.0 ],
-                    "presentation_linecount": 8,
-                    "text": "receives led values as [ i i i ] on each led-n-buf where n is the led index (1-30)\n\nvalues are held in a buffer until a bang is sent to *led-SCL-pulse* to send them out of the outlet. This will format the values such that:\n\n/led/set/state [ R, G, B, .... ]\n\nWhere /led/set/state contains a blob of 90 bytes (R, G, B for each led)"
+                    "numoutlets": 2,
+                    "outlettype": [ "bang", "bang" ],
+                    "patching_rect": [ 591.5593354701996, 331.97278594970703, 32.0, 22.0 ],
+                    "text": "t b b"
                 }
             },
             {
@@ -32,6 +41,94 @@
                     "numoutlets": 0,
                     "patching_rect": [ 316.0, 71.0, 140.0, 22.0 ],
                     "text": "poly~ led-buffers-poly 30"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-22",
+                    "maxclass": "message",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [ "" ],
+                    "patching_rect": [ 772.7891082763672, 459.9999684691429, 113.60544109344482, 22.0 ],
+                    "text": "led-30-buf"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-17",
+                    "maxclass": "message",
+                    "numinlets": 2,
+                    "numoutlets": 1,
+                    "outlettype": [ "" ],
+                    "patching_rect": [ 591.5593354701996, 373.79307782649994, 75.0, 22.0 ],
+                    "text": "255 255 255"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-13",
+                    "maxclass": "newobj",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patching_rect": [ 591.5593354701996, 479.5918321609497, 63.0, 22.0 ],
+                    "text": "s whateva"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-12",
+                    "maxclass": "button",
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "outlettype": [ "bang" ],
+                    "parameter_enable": 0,
+                    "patching_rect": [ 699.0, 266.7481083869934, 24.0, 24.0 ]
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-9",
+                    "maxclass": "newobj",
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "outlettype": [ "bang" ],
+                    "patching_rect": [ 699.2366895675659, 236.6412377357483, 58.0, 22.0 ],
+                    "text": "loadbang"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-5",
+                    "maxclass": "newobj",
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "outlettype": [ "" ],
+                    "patching_rect": [ 714.2857074737549, 402.72108459472656, 122.0, 22.0 ],
+                    "text": "sprintf set led-%d-buf"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-2",
+                    "maxclass": "newobj",
+                    "numinlets": 2,
+                    "numoutlets": 3,
+                    "outlettype": [ "bang", "bang", "int" ],
+                    "patching_rect": [ 699.0, 298.0, 43.0, 22.0 ],
+                    "text": "Uzi 30"
+                }
+            },
+            {
+                "box": {
+                    "fontsize": 18.0,
+                    "id": "obj-250",
+                    "linecount": 8,
+                    "maxclass": "comment",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patching_rect": [ 506.36361825466156, 32.72727155685425, 705.0, 172.0 ],
+                    "text": "receives led values as [ i i i ] on each led-n-buf where n is the led index (1-30)\n\nvalues are held in a buffer until a bang is sent to *led-SCL-pulse* to send them out of the outlet. This will format the values such that:\n\n/led/set/state [ R, G, B, .... ]\n\nWhere /led/set/state contains a blob of 90 bytes (R, G, B for each led)"
                 }
             },
             {
@@ -169,6 +266,42 @@
             },
             {
                 "patchline": {
+                    "destination": [ "obj-2", 0 ],
+                    "source": [ "obj-12", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-13", 0 ],
+                    "source": [ "obj-17", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-23", 0 ],
+                    "source": [ "obj-2", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-25", 1 ],
+                    "source": [ "obj-2", 2 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-17", 0 ],
+                    "source": [ "obj-23", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-25", 0 ],
+                    "source": [ "obj-23", 1 ]
+                }
+            },
+            {
+                "patchline": {
                     "destination": [ "obj-29", 0 ],
                     "source": [ "obj-240", 0 ]
                 }
@@ -177,6 +310,12 @@
                 "patchline": {
                     "destination": [ "obj-29", 0 ],
                     "source": [ "obj-246", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-5", 0 ],
+                    "source": [ "obj-25", 0 ]
                 }
             },
             {
@@ -193,6 +332,20 @@
             },
             {
                 "patchline": {
+                    "destination": [ "obj-13", 0 ],
+                    "order": 1,
+                    "source": [ "obj-5", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-22", 0 ],
+                    "order": 0,
+                    "source": [ "obj-5", 0 ]
+                }
+            },
+            {
+                "patchline": {
                     "destination": [ "obj-77", 0 ],
                     "source": [ "obj-7", 0 ]
                 }
@@ -201,6 +354,12 @@
                 "patchline": {
                     "destination": [ "obj-1", 0 ],
                     "source": [ "obj-77", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-12", 0 ],
+                    "source": [ "obj-9", 0 ]
                 }
             }
         ]
