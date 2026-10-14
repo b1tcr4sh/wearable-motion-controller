@@ -9,35 +9,206 @@
             "modernui": 1
         },
         "classnamespace": "box",
-        "rect": [ 34.0, 77.0, 1113.0, 713.0 ],
+        "rect": [ 34.0, 77.0, 1468.0, 713.0 ],
         "boxes": [
             {
                 "box": {
-                    "id": "obj-63",
-                    "linecount": 2,
-                    "maxclass": "comment",
-                    "numinlets": 1,
+                    "id": "obj-69",
+                    "maxclass": "newobj",
+                    "numinlets": 0,
                     "numoutlets": 0,
-                    "patching_rect": [ 916.9642769694328, 29.978723883628845, 150.0, 34.0 ],
-                    "text": "list of rgb 0-255 -- led-n-buf where n is index"
+                    "patcher": {
+                        "fileversion": 1,
+                        "appversion": {
+                            "major": 9,
+                            "minor": 1,
+                            "revision": 5,
+                            "architecture": "x64",
+                            "modernui": 1
+                        },
+                        "classnamespace": "box",
+                        "rect": [ 59.0, 106.0, 1000.0, 659.0 ],
+                        "boxes": [
+                            {
+                                "box": {
+                                    "id": "obj-76",
+                                    "maxclass": "message",
+                                    "numinlets": 2,
+                                    "numoutlets": 1,
+                                    "outlettype": [ "" ],
+                                    "patching_rect": [ 584.0, 177.0, 29.5, 22.0 ],
+                                    "text": "6"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "id": "obj-61",
+                                    "maxclass": "message",
+                                    "numinlets": 2,
+                                    "numoutlets": 1,
+                                    "outlettype": [ "" ],
+                                    "patching_rect": [ 584.0, 223.0, 49.0, 22.0 ],
+                                    "text": "data $1"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "fontname": "Arial",
+                                    "fontsize": 11.600006,
+                                    "id": "obj-41",
+                                    "linecount": 2,
+                                    "maxclass": "message",
+                                    "numinlets": 2,
+                                    "numoutlets": 1,
+                                    "outlettype": [ "" ],
+                                    "patching_rect": [ 316.0, 188.0, 60.0, 35.0 ],
+                                    "text": ";\r\ndsp start"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "id": "obj-75",
+                                    "maxclass": "message",
+                                    "numinlets": 2,
+                                    "numoutlets": 1,
+                                    "outlettype": [ "" ],
+                                    "patching_rect": [ 318.0, 107.0, 55.0, 22.0 ],
+                                    "text": "pd~ stop"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "id": "obj-71",
+                                    "maxclass": "message",
+                                    "numinlets": 2,
+                                    "numoutlets": 1,
+                                    "outlettype": [ "" ],
+                                    "patching_rect": [ 483.0, 141.0, 413.0, 22.0 ],
+                                    "text": "pd~ start C:/Users/weewee/dev/wearable-motion-controller/max/led-send.pd"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "id": "obj-68",
+                                    "maxclass": "message",
+                                    "numinlets": 2,
+                                    "numoutlets": 1,
+                                    "outlettype": [ "" ],
+                                    "patching_rect": [ 393.0, 107.0, 336.0, 22.0 ],
+                                    "text": "pd~ pddir C:/Users/weewee/scoop/apps/pure-data/current/bin"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "id": "obj-65",
+                                    "maxclass": "newobj",
+                                    "numinlets": 2,
+                                    "numoutlets": 3,
+                                    "outlettype": [ "signal", "signal", "" ],
+                                    "patching_rect": [ 483.0, 294.0, 40.0, 22.0 ],
+                                    "text": "pd~"
+                                }
+                            }
+                        ],
+                        "lines": [
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-65", 0 ],
+                                    "source": [ "obj-41", 0 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-65", 0 ],
+                                    "source": [ "obj-61", 0 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-65", 0 ],
+                                    "source": [ "obj-68", 0 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-65", 0 ],
+                                    "source": [ "obj-71", 0 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-65", 0 ],
+                                    "source": [ "obj-75", 0 ]
+                                }
+                            },
+                            {
+                                "patchline": {
+                                    "destination": [ "obj-61", 0 ],
+                                    "source": [ "obj-76", 0 ]
+                                }
+                            }
+                        ]
+                    },
+                    "patching_rect": [ 1191.0, 215.0, 32.0, 22.0 ],
+                    "text": "p pd"
                 }
             },
             {
                 "box": {
-                    "fontface": 0,
-                    "id": "obj-81",
-                    "linecount": 13,
-                    "maxclass": "o.display",
-                    "numinlets": 1,
+                    "id": "obj-64",
+                    "maxclass": "message",
+                    "numinlets": 2,
                     "numoutlets": 1,
                     "outlettype": [ "" ],
-                    "patching_rect": [ 938.3928481936455, 89.28571343421936, 150.0, 188.0 ],
-                    "text": "/led/set/state : blob(-56, -56, -56, 0, 0, 0, 0, 0, 0, 0, 0, 0, -56, -56, -56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)"
+                    "patching_rect": [ 872.0, 491.4861981868744, 75.0, 22.0 ],
+                    "text": "255 255 255"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-55",
+                    "maxclass": "newobj",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patching_rect": [ 872.0, 529.4861981868744, 65.0, 22.0 ],
+                    "text": "s led-1-buf"
                 }
             },
             {
                 "box": {
                     "id": "obj-66",
+                    "maxclass": "newobj",
+                    "numinlets": 0,
+                    "numoutlets": 1,
+                    "outlettype": [ "" ],
+                    "patching_rect": [ 916.9642769694328, 61.60714226961136, 51.0, 22.0 ],
+                    "text": "raw-osc"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-52",
+                    "maxclass": "button",
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "outlettype": [ "bang" ],
+                    "parameter_enable": 0,
+                    "patching_rect": [ 758.710519194603, 490.4861981868744, 24.0, 24.0 ]
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-246",
+                    "maxclass": "newobj",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patching_rect": [ 758.710519194603, 529.4861981868744, 94.0, 22.0 ],
+                    "text": "s led-SCL-pulse"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-35",
                     "maxclass": "newobj",
                     "numinlets": 0,
                     "numoutlets": 1,
@@ -52,8 +223,41 @@
                             "modernui": 1
                         },
                         "classnamespace": "box",
-                        "rect": [ 34.0, 77.0, 1468.0, 713.0 ],
+                        "rect": [ 142.0, 136.0, 1110.0, 713.0 ],
+                        "visible": 1,
                         "boxes": [
+                            {
+                                "box": {
+                                    "fontface": 0,
+                                    "id": "obj-7",
+                                    "maxclass": "o.display",
+                                    "numinlets": 1,
+                                    "numoutlets": 1,
+                                    "outlettype": [ "" ],
+                                    "patching_rect": [ 1106.0, 238.0, 150.0, 33.0 ]
+                                }
+                            },
+                            {
+                                "box": {
+                                    "id": "obj-4",
+                                    "maxclass": "newobj",
+                                    "numinlets": 1,
+                                    "numoutlets": 1,
+                                    "outlettype": [ "" ],
+                                    "patching_rect": [ 898.0, 149.0, 53.0, 22.0 ],
+                                    "text": "o.collect"
+                                }
+                            },
+                            {
+                                "box": {
+                                    "id": "obj-2",
+                                    "maxclass": "newobj",
+                                    "numinlets": 1,
+                                    "numoutlets": 0,
+                                    "patching_rect": [ 1129.4118003845215, 478.4313876628876, 38.0, 22.0 ],
+                                    "text": "poly~"
+                                }
+                            },
                             {
                                 "box": {
                                     "id": "obj-240",
@@ -426,8 +630,8 @@
                                     "numinlets": 1,
                                     "numoutlets": 1,
                                     "outlettype": [ "" ],
-                                    "patching_rect": [ 333.33330392837524, 1077.272632241249, 150.0, 188.0 ],
-                                    "text": "/led/set/state : blob(-56, -56, -56, 0, 0, 0, 0, 0, 0, 0, 0, 0, -56, -56, -56, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)"
+                                    "patching_rect": [ 333.33330392837524, 1077.272632241249, 156.0, 188.0 ],
+                                    "text": "/led/set/state : blob(-1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)"
                                 }
                             },
                             {
@@ -796,18 +1000,6 @@
                                     "outlettype": [ "FullPacket", "FullPacket" ],
                                     "patching_rect": [ 148.7179675102234, 969.0721106529236, 691.0714219808578, 57.0 ],
                                     "text": "/dummy/led/set/state = blob([/led/1, /led/2, /led/3, /led/4, /led/5, /led/6, /led/7, /led/8, /led/9, /led/10, /led/11, /led/12, /led/13, /led/14, /led/15, /led/16, /led/17, /led/18, /led/19, /led/20, /led/21, /led/22, /led/23, /led/24, /led/25, /led/26, /led/27, /led/28, /led/29, /led/30])"
-                                }
-                            },
-                            {
-                                "box": {
-                                    "fontsize": 18.0,
-                                    "id": "obj-250",
-                                    "linecount": 8,
-                                    "maxclass": "comment",
-                                    "numinlets": 1,
-                                    "numoutlets": 0,
-                                    "patching_rect": [ 26.5625, 101.5625, 705.0, 172.0 ],
-                                    "text": "receives led values as [ i i i ] on each led-n-buf where n is the led index (0-29)\n\nvalues are held in a buffer until a bang is sent to *led-SCL-pulse* to send them out of the outlet. This will format the values such that:\n\n/led/set/state [ R, G, B, .... ]\n\nWhere /led/set/state contains a blob of 90 bytes (R, G, B for each led)"
                                 }
                             },
                             {
@@ -2360,6 +2552,12 @@
                             },
                             {
                                 "patchline": {
+                                    "destination": [ "obj-7", 0 ],
+                                    "source": [ "obj-4", 0 ]
+                                }
+                            },
+                            {
+                                "patchline": {
                                     "destination": [ "obj-11", 0 ],
                                     "midpoints": [ 291.22044253349304, 388.6683648824692, 371.865607380867, 388.6683648824692 ],
                                     "order": 24,
@@ -2586,8 +2784,32 @@
                             }
                         ]
                     },
-                    "patching_rect": [ 916.9642769694328, 61.60714226961136, 61.0, 22.0 ],
+                    "patching_rect": [ 1191.0, 183.0, 61.0, 22.0 ],
                     "text": "p raw-osc"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-63",
+                    "linecount": 2,
+                    "maxclass": "comment",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patching_rect": [ 916.9642769694328, 29.978723883628845, 150.0, 34.0 ],
+                    "text": "list of rgb 0-255 -- led-n-buf where n is index"
+                }
+            },
+            {
+                "box": {
+                    "fontface": 0,
+                    "id": "obj-81",
+                    "linecount": 11,
+                    "maxclass": "o.display",
+                    "numinlets": 1,
+                    "numoutlets": 1,
+                    "outlettype": [ "" ],
+                    "patching_rect": [ 938.3928481936455, 89.28571343421936, 168.0, 162.0 ],
+                    "text": "/led/set/state : blob(-1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)"
                 }
             },
             {
@@ -3515,6 +3737,12 @@
             },
             {
                 "patchline": {
+                    "destination": [ "obj-246", 0 ],
+                    "source": [ "obj-52", 0 ]
+                }
+            },
+            {
+                "patchline": {
                     "destination": [ "obj-2", 0 ],
                     "midpoints": [ 756.210519194603, 213.81578743457794, 231.5, 213.81578743457794 ],
                     "source": [ "obj-53", 0 ]
@@ -3619,8 +3847,14 @@
             },
             {
                 "patchline": {
+                    "destination": [ "obj-55", 0 ],
+                    "source": [ "obj-64", 0 ]
+                }
+            },
+            {
+                "patchline": {
                     "destination": [ "obj-2", 0 ],
-                    "midpoints": [ 926.4642769694328, 214.7262077331543, 231.5, 214.7262077331543 ],
+                    "midpoints": [ 926.4642769694328, 214.0, 231.5, 214.0 ],
                     "order": 1,
                     "source": [ "obj-66", 0 ]
                 }
