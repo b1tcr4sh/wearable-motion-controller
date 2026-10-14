@@ -1,0 +1,18 @@
+#N canvas 652 43 744 449 12;
+#X obj 77 294 netsend -u -b;
+#X msg 387 213 connect 192.168.4.1 10000;
+#X obj 399 164 loadbang;
+#X obj 71 61 receive data;
+#X msg 377 296 connect 127.0.0.1 9999;
+#X msg 381 254 disconnect;
+#X obj 34 246 print;
+#X msg 238 154 3 255 255 255;
+#X obj 76 213 oscformat -f b led set state;
+#X connect 1 0 0 0;
+#X connect 2 0 1 0;
+#X connect 3 0 8 0;
+#X connect 4 0 0 0;
+#X connect 5 0 0 0;
+#X connect 7 0 8 0;
+#X connect 8 0 0 0;
+#X connect 8 0 6 0;

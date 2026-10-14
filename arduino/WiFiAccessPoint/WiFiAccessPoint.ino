@@ -32,6 +32,9 @@ bool accepting = false;
 float accelXOffset = 0;
 float accelYOffset = 0;
 float accelZOffset = 0;
+float gyroXOffset = 0;
+float gyroyOffset = 0;
+float gyrozOffset = 0;
 
 float accelx;
 float accely;
@@ -151,13 +154,23 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
     Blackout();
   }
 
-  if (mes.checkOscAddress("/led/all", "iiii")) {
+  if (mes.checkOscAddressAndTypeTags("/led/all", "iiii")) {
     int r = mes.nextAsInt(); // 0 - 255
     int g = mes.nextAsInt(); // 0 - 255
     int b = mes.nextAsInt(); // 0 - 255
     int brightness = mes.nextAsInt(); // 0 - 100 ?
 
     SetAll(r, g, b, brightness);
+  }
+
+  // receive blob at /led/set/state that contains some number of led states, each 4 bytes (i, R, G, B)
+  if (mes.checkOscAddressAndTypeTags("/led/set/state", "b")) {
+    const uint8_t* data;
+    int len = mes.nextAsBlob(data);
+
+    for (int i = 0; i < 90; i++) {
+      
+    }
   }
 }
 
@@ -243,6 +256,25 @@ void Calibrate() {
   accelXOffset = xSum / 200;
   accelYOffset = ySum / 200;
   accelZOffset = zSum / 200;
+
+  xSum = 0;
+  ySum = 0;
+  zSum = 0;
+
+  for (int i = 0; i < 200; i++) {
+    sensors_event_t accel, gyro, temp;
+    mpu.getEvent(&accel, &gyro, &temp);
+
+    xSum += gyro.gyro.x
+    ySum += gyro.gyro.y
+    zSum += gyro.gyro.z;
+
+    delay(5);
+  }
+
+  gyroXOffset = xSum / 200;
+  gyroYOffset = ySum / 200;
+  gyroZOffset = zSum / 200; 
 
   Serial.println("Done!");
 }
