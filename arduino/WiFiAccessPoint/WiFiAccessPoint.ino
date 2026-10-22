@@ -93,9 +93,9 @@ void loop() {
     accely = ( accel.acceleration.y /* / 16384.0 */) - accelYOffset;
     accelz = ( accel.acceleration.z /* / 16384.0 */) - accelZOffset;
 
-    gyrox = gyro.gyro.x / 131.0;
-    gyroy = gyro.gyro.y / 131.0;
-    gyroz = gyro.gyro.z / 131.0;
+    gyrox = (gyro.gyro.x / 131.0) - gyroXOffset;
+    gyroy = (gyro.gyro.y / 131.0) - gyroYOffset;
+    gyroz = (gyro.gyro.z / 131.0) - gyroZOffset;
 
     if (SendData(accelx, accely, accelz, gyrox, gyroy, gyroz)) {
       sentData = true;
