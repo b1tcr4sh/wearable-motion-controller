@@ -18,7 +18,7 @@
 // Set these to your desired credentials.
   // You can remove the password parameter if you want the AP to be open.
   // a valid password must have more than 7 characters
-const char *ssid = "espMPU";
+const char *ssid = "orbfi";
 const char *password = "eightchars";
 
 const int movementThreshold = 0.1;
