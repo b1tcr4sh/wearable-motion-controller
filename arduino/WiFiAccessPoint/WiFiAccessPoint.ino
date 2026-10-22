@@ -36,13 +36,6 @@ float gyroXOffset = 0;
 float gyroYOffset = 0;
 float gyroZOffset = 0;
 
-float accelx;
-float accely;
-float accelz;
-float gyrox;
-float gyroy;
-float gyroz;
-
 bool sentData = false;
 
 WiFiUDP udp;
@@ -83,30 +76,50 @@ void setup() {
 }
 
 void loop() {
+  float accelx;
+  float accely;
+  float accelz;
+  float gyrox;
+  float gyroy;
+  float gyroz;
+
   osc.onOscMessageReceived(OscMessageParser); // Checks for incoming OSC messages
 
-  if(mpu.getMotionInterruptStatus()) {
-    sensors_event_t accel, gyro, temp;
-    mpu.getEvent(&accel, &gyro, &temp);
+  // if(mpu.getMotionInterruptStatus()) {
+    sensors_event_t a, g, t;
+    mpu.getEvent(&a, &g, &t);
 
-    accelx = ( accel.acceleration.x /*/ 16384.0 */) - accelXOffset;
-    accely = ( accel.acceleration.y /* / 16384.0 */) - accelYOffset;
-    accelz = ( accel.acceleration.z /* / 16384.0 */) - accelZOffset;
+    accelx = (a.acceleration.x); //- accelXOffset; // meters per second ^ 2 (meters per second per second)
+    accely = (a.acceleration.y); //- accelYOffset;
+    accelz = (a.acceleration.z); //- accelZOffset;
 
-    gyrox = (gyro.gyro.x / 131.0) - gyroXOffset;
-    gyroy = (gyro.gyro.y / 131.0) - gyroYOffset;
-    gyroz = (gyro.gyro.z / 131.0) - gyroZOffset;
+    gyrox = (g.gyro.x /* / 131.0 */); //- gyroXOffset; // radians per second
+    gyroy = (g.gyro.y /* / 131.0 */); //- gyroYOffset;
+    gyroz = (g.gyro.z /* / 131.0 */); //- gyroZOffset;
 
-    if (SendData(accelx, accely, accelz, gyrox, gyroy, gyroz)) {
-      sentData = true;
+    if (accepting) {
+      osc.sendMessage("/imu/data", "ffffff", (float) accelx, (float) accely, (float) accelz, (float) gyrox, (float) gyroy, (float) gyroz);
+
+      Serial.print("AccelX:");
+      Serial.print(a.acceleration.x);
+      Serial.print(",");
+      Serial.print("AccelY:");
+      Serial.print(a.acceleration.y);
+      Serial.print(",");
+      Serial.print("AccelZ:");
+      Serial.print(a.acceleration.z);
+      Serial.print(", ");
+      Serial.print("GyroX:");
+      Serial.print(g.gyro.x);
+      Serial.print(",");
+      Serial.print("GyroY:");
+      Serial.print(g.gyro.y);
+      Serial.print(",");
+      Serial.print("GyroZ:");
+      Serial.print(g.gyro.z);
+      Serial.println("");
     }
-
-    if (sentData) {
-      Serial.printf("Sent gyro: %f, %f, %f; accel: %f, %f, %f\n", accel.acceleration.x, accel.acceleration.y, accel.acceleration.z, gyro.gyro.x, gyro.gyro.y, gyro.gyro.z);
-    }
-
-    sentData = false;
-  }
+  // }
 
   delay(30);
 }
@@ -297,69 +310,73 @@ void Calibrate() {
 
 void setupMPU() {
   // mpu.setHighPassFilter(MPU6050_HIGHPASS_0_63_HZ);
-  mpu.setMotionDetectionThreshold(movementThreshold);
-  mpu.setMotionDetectionDuration(movementDurationThreshold);
-  mpu.setInterruptPinLatch(true);	// Keep it latched.  Will turn off when reinitialized.
-  mpu.setInterruptPinPolarity(true);
-  mpu.setMotionInterrupt(true);
-
+  // mpu.setMotionDetectionThreshold(movementThreshold);
+  // mpu.setMotionDetectionDuration(movementDurationThreshold);
+  // mpu.setInterruptPinLatch(true);	// Keep it latched.  Will turn off when reinitialized.
+  // mpu.setInterruptPinPolarity(true);
+  // mpu.setMotionInterrupt(true);
 
   mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
-  Serial.print("Accelerometer range set to: ");
-  switch (mpu.getAccelerometerRange()) {
-  case MPU6050_RANGE_2_G:
-    Serial.println("+-2G");
-    break;
-  case MPU6050_RANGE_4_G:
-    Serial.println("+-4G");
-    break;
-  case MPU6050_RANGE_8_G:
-    Serial.println("+-8G");
-    break;
-  case MPU6050_RANGE_16_G:
-    Serial.println("+-16G");
-    break;
-  }
   mpu.setGyroRange(MPU6050_RANGE_250_DEG);
-  Serial.print("Gyro range set to: ");
-  switch (mpu.getGyroRange()) {
-  case MPU6050_RANGE_250_DEG:
-    Serial.println("+- 250 deg/s");
-    break;
-  case MPU6050_RANGE_500_DEG:
-    Serial.println("+- 500 deg/s");
-    break;
-  case MPU6050_RANGE_1000_DEG:
-    Serial.println("+- 1000 deg/s");
-    break;
-  case MPU6050_RANGE_2000_DEG:
-    Serial.println("+- 2000 deg/s");
-    break;
-  }
-
   mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
-  Serial.print("Filter bandwidth set to: ");
-  switch (mpu.getFilterBandwidth()) {
-  case MPU6050_BAND_260_HZ:
-    Serial.println("260 Hz");
-    break;
-  case MPU6050_BAND_184_HZ:
-    Serial.println("184 Hz");
-    break;
-  case MPU6050_BAND_94_HZ:
-    Serial.println("94 Hz");
-    break;
-  case MPU6050_BAND_44_HZ:
-    Serial.println("44 Hz");
-    break;
-  case MPU6050_BAND_21_HZ:
-    Serial.println("21 Hz");
-    break;
-  case MPU6050_BAND_10_HZ:
-    Serial.println("10 Hz");
-    break;
-  case MPU6050_BAND_5_HZ:
-    Serial.println("5 Hz");
-    break;
-  }
+
+
+  // mpu.setAccelerometerRange(MPU6050_RANGE_16_G);
+  // Serial.print("Accelerometer range set to: ");
+  // switch (mpu.getAccelerometerRange()) {
+  // case MPU6050_RANGE_2_G:
+  //   Serial.println("+-2G");
+  //   break;
+  // case MPU6050_RANGE_4_G:
+  //   Serial.println("+-4G");
+  //   break;
+  // case MPU6050_RANGE_8_G:
+  //   Serial.println("+-8G");
+  //   break;
+  // case MPU6050_RANGE_16_G:
+  //   Serial.println("+-16G");
+  //   break;
+  // }
+  // mpu.setGyroRange(MPU6050_RANGE_250_DEG);
+  // Serial.print("Gyro range set to: ");
+  // switch (mpu.getGyroRange()) {
+  // case MPU6050_RANGE_250_DEG:
+  //   Serial.println("+- 250 deg/s");
+  //   break;
+  // case MPU6050_RANGE_500_DEG:
+  //   Serial.println("+- 500 deg/s");
+  //   break;
+  // case MPU6050_RANGE_1000_DEG:
+  //   Serial.println("+- 1000 deg/s");
+  //   break;
+  // case MPU6050_RANGE_2000_DEG:
+  //   Serial.println("+- 2000 deg/s");
+  //   break;
+  // }
+
+  // mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+  // Serial.print("Filter bandwidth set to: ");
+  // switch (mpu.getFilterBandwidth()) {
+  // case MPU6050_BAND_260_HZ:
+  //   Serial.println("260 Hz");
+  //   break;
+  // case MPU6050_BAND_184_HZ:
+  //   Serial.println("184 Hz");
+  //   break;
+  // case MPU6050_BAND_94_HZ:
+  //   Serial.println("94 Hz");
+  //   break;
+  // case MPU6050_BAND_44_HZ:
+  //   Serial.println("44 Hz");
+  //   break;
+  // case MPU6050_BAND_21_HZ:
+  //   Serial.println("21 Hz");
+  //   break;
+  // case MPU6050_BAND_10_HZ:
+  //   Serial.println("10 Hz");
+  //   break;
+  // case MPU6050_BAND_5_HZ:
+  //   Serial.println("5 Hz");
+  //   break;
+  // }
 }
