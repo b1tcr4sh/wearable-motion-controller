@@ -29,12 +29,8 @@ const unsigned int serverPort = 10000;
 const unsigned int destPort = 12000;
   
 bool accepting = false;
-float accelXOffset = 0;
-float accelYOffset = 0;
-float accelZOffset = 0;
-float gyroXOffset = 0;
-float gyroYOffset = 0;
-float gyroZOffset = 0;
+
+float vector_offset = 0;
 
 bool sentData = false;
 
@@ -66,8 +62,6 @@ void setup() {
     return;
   }
 
-  // WiFi.onEvent(WiFiStationConnected, WIFI_EVENT_AP_STACONNECTED);  
-
   udp.begin(serverPort);
   Serial.println("Listening for OSC messages...");
 
@@ -76,50 +70,43 @@ void setup() {
 }
 
 void loop() {
-  float accelx;
-  float accely;
-  float accelz;
-  float gyrox;
-  float gyroy;
-  float gyroz;
-
   osc.onOscMessageReceived(OscMessageParser); // Checks for incoming OSC messages
 
-  // if(mpu.getMotionInterruptStatus()) {
-    sensors_event_t a, g, t;
-    mpu.getEvent(&a, &g, &t);
+  float accelx, accely, accelz, gyrox, gyroy, gyroz;
+  
+  sensors_event_t a, g, t;
+  mpu.getEvent(&a, &g, &t);
 
-    accelx = (a.acceleration.x); //- accelXOffset; // meters per second ^ 2 (meters per second per second)
-    accely = (a.acceleration.y); //- accelYOffset;
-    accelz = (a.acceleration.z); //- accelZOffset;
+  accelx = (a.acceleration.x); //- accelXOffset; // meters per second ^2 (meters per second per second)
+  accely = (a.acceleration.y); //- accelYOffset;
+  accelz = (a.acceleration.z); //- accelZOffset;
 
-    gyrox = (g.gyro.x /* / 131.0 */); //- gyroXOffset; // radians per second
-    gyroy = (g.gyro.y /* / 131.0 */); //- gyroYOffset;
-    gyroz = (g.gyro.z /* / 131.0 */); //- gyroZOffset;
+  gyrox = (g.gyro.x /* / 131.0 */); //- gyroXOffset; // radians per second ^2
+  gyroy = (g.gyro.y /* / 131.0 */); //- gyroYOffset;
+  gyroz = (g.gyro.z /* / 131.0 */); //- gyroZOffset;
 
-    if (accepting) {
-      osc.sendMessage("/imu/data", "ffffff", (float) accelx, (float) accely, (float) accelz, (float) gyrox, (float) gyroy, (float) gyroz);
+  if (accepting) {
+    SendData(accelx, accely, accelz, gyrox, gyroy, gyroz);
 
-      Serial.print("AccelX:");
-      Serial.print(a.acceleration.x);
-      Serial.print(",");
-      Serial.print("AccelY:");
-      Serial.print(a.acceleration.y);
-      Serial.print(",");
-      Serial.print("AccelZ:");
-      Serial.print(a.acceleration.z);
-      Serial.print(", ");
-      Serial.print("GyroX:");
-      Serial.print(g.gyro.x);
-      Serial.print(",");
-      Serial.print("GyroY:");
-      Serial.print(g.gyro.y);
-      Serial.print(",");
-      Serial.print("GyroZ:");
-      Serial.print(g.gyro.z);
-      Serial.println("");
-    }
-  // }
+    Serial.print("AccelX:");
+    Serial.print(a.acceleration.x);
+    Serial.print(",");
+    Serial.print("AccelY:");
+    Serial.print(a.acceleration.y);
+    Serial.print(",");
+    Serial.print("AccelZ:");
+    Serial.print(a.acceleration.z);
+    Serial.print(", ");
+    Serial.print("GyroX:");
+    Serial.print(g.gyro.x);
+    Serial.print(",");
+    Serial.print("GyroY:");
+    Serial.print(g.gyro.y);
+    Serial.print(",");
+    Serial.print("GyroZ:");
+    Serial.print(g.gyro.z);
+    Serial.println("");
+  }
 
   delay(30);
 }
@@ -159,7 +146,7 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
     int b = mes.nextAsInt(); // 0 - 255
     int brightness = mes.nextAsInt(); // 0 - 100 ?
 
-    SetLeds(index, r, g, b, brightness); 
+    SetLed(index, r, g, b, brightness); 
   }
 
   if (mes.checkOscAddress("/led/off")) {
@@ -210,7 +197,7 @@ void SetAll(int red, int green, int blue, int brightness) {
   FastLED.show();
 }
 
-void SetLeds(int index, int red, int green, int blue, int brightness) {
+void SetLed(int index, int red, int green, int blue, int brightness) {
   leds[index] = CRGB(red, green, blue);
   FastLED.show();
 }
@@ -232,79 +219,32 @@ void StopSending() {
   accepting = false;
 }
 
-bool SendGyroData(float x, float y, float z) {
-  if (!accepting) {
-    return false;
-  }
+void SendData(float accel_x, float accel_y, float accel_z, float gyro_x, float gyro_y, float gyro_z) { // send data as one blob
+  float vector = CalculatePythagoreanVector(accel_x, accel_y, accel_z) - vector_offset;
 
-  osc.sendFloat("/imu/gyro/x", x);
-  osc.sendFloat("/imu/gyro/y", y);
-  osc.sendFloat("/imu/gyro/z", z);
+  osc.sendMessage("/imu/accel", "ffffff", (float) accel_x, (float) accel_y, (float) accel_z, (float) gyro_x, (float) gyro_y, (float) gyro_z); // send raw acceleration data on all 3 axes
+  osc.sendMessage("/imu/accel/vector", "f", (float) vector); // send calculated vector
 
-  return true;
 }
 
-bool SendAccelData(float x, float y, float z) {
-  if (!accepting) {
-    return false;
-  }
-
-  osc.sendFloat("/imu/accel/x", x);
-  osc.sendFloat("/imu/accel/y", y);
-  osc.sendFloat("/imu/accel/z", z);
-
-  return true;
+float CalculatePythagoreanVector(float accel_x, float accel_y, float accel_z) {
+  return sqrt(pow(accel_x, 2) + pow(accel_y, 2) + pow(accel_z, 2)); // sqrt(x^2 + y^2 + z^2) pythagorean theorem. Calculates a raw vector of acceleration
 }
 
-bool SendData(float accel_x, float accel_y, float accel_z, float gyro_x, float gyro_y, float gyro_z) { // send data as one blob
-  if (!accepting) {
-    return false;
-  }
-
-  osc.sendMessage("/imu/data", "ffffff", accel_x, accel_y, accel_z, gyro_x, gyro_y, gyro_z);
-
-  return true;
-}
-
-void Calibrate() {
-  float xSum = 0, ySum = 0, zSum = 0;
+void Calibrate() { // remove gravity from vector measurement (idk how to do this for raw values yet)
+  float vector_sum;
 
   Serial.println("Calibrating...");
 
-  for (int i = 0; i < 200; i++) {
-    sensors_event_t accel, gyro, temp;
-    mpu.getEvent(&accel, &gyro, &temp);
+  for (int i = 0; i < 200; i++) { // get and sum 200 sensor events
+    sensors_event_t a, g, t;
+    mpu.getEvent(&a, &g, &t);
 
-    xSum += accel.acceleration.x;
-    ySum += accel.acceleration.y;
-    zSum += accel.acceleration.z;
-
+    vector_sum += CalculatePythagoreanVector(a.acceleration.x, a.acceleration.y, a.acceleration.z);
     delay(5);
   }
 
-  accelXOffset = xSum / 200;
-  accelYOffset = ySum / 200;
-  accelZOffset = zSum / 200;
-
-  xSum = 0;
-  ySum = 0;
-  zSum = 0;
-
-  for (int i = 0; i < 200; i++) {
-    sensors_event_t accel, gyro, temp;
-    mpu.getEvent(&accel, &gyro, &temp);
-
-    xSum += gyro.gyro.x;
-    ySum += gyro.gyro.y;
-    zSum += gyro.gyro.z;
-
-    delay(5);
-  }
-
-  gyroXOffset = xSum / 200;
-  gyroYOffset = ySum / 200;
-  gyroZOffset = zSum / 200; 
-
+  vector_offset = vector_sum / 200;
   Serial.println("Done!");
 }
 

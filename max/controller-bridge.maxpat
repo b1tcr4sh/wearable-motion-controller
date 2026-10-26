@@ -93,8 +93,8 @@
                     "numinlets": 2,
                     "numoutlets": 2,
                     "outlettype": [ "", "" ],
-                    "patching_rect": [ 933.9869576096535, 298.69281989336014, 135.0, 22.0 ],
-                    "text": "route /imu/planar/vector"
+                    "patching_rect": [ 933.9869576096535, 298.69281989336014, 129.0, 22.0 ],
+                    "text": "route /imu/accel/vector"
                 }
             },
             {
@@ -2211,8 +2211,8 @@
                     "numinlets": 2,
                     "numoutlets": 2,
                     "outlettype": [ "", "" ],
-                    "patching_rect": [ 222.0, 298.83039635419846, 99.0, 22.0 ],
-                    "text": "route /imu/planar"
+                    "patching_rect": [ 222.0, 298.83039635419846, 93.0, 22.0 ],
+                    "text": "route /imu/accel"
                 }
             },
             {
