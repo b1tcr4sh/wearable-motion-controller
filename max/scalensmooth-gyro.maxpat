@@ -9,11 +9,7 @@
             "modernui": 1
         },
         "classnamespace": "box",
-<<<<<<< HEAD
-        "rect": [ 134.0, 134.0, 1468.0, 713.0 ],
-=======
         "rect": [ 34.0, 77.0, 1468.0, 713.0 ],
->>>>>>> axes-r-fuxd
         "boxes": [
             {
                 "box": {
@@ -134,8 +130,8 @@
                     "numinlets": 6,
                     "numoutlets": 1,
                     "outlettype": [ "" ],
-                    "patching_rect": [ 163.0, 157.0, 138.0, 22.0 ],
-                    "text": "scale -4.5 4.5 -100. 100."
+                    "patching_rect": [ 163.0, 157.0, 111.0, 22.0 ],
+                    "text": "scale -4 4 -100 100"
                 }
             }
         ],
@@ -160,9 +156,6 @@
             },
             {
                 "patchline": {
-<<<<<<< HEAD
-                    "destination": [ "obj-95", 1 ],
-=======
                     "destination": [ "obj-10", 1 ],
                     "midpoints": [ 219.73926585912704, 229.57747074961662, 190.0, 229.57747074961662 ],
                     "source": [ "obj-4", 0 ]
@@ -180,7 +173,6 @@
                 "patchline": {
                     "destination": [ "obj-4", 1 ],
                     "order": 0,
->>>>>>> axes-r-fuxd
                     "source": [ "obj-6", 0 ]
                 }
             },

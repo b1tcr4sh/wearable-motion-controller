@@ -156,9 +156,6 @@
             },
             {
                 "patchline": {
-<<<<<<< HEAD
-                    "destination": [ "obj-95", 1 ],
-=======
                     "destination": [ "obj-10", 1 ],
                     "midpoints": [ 219.5, 220.1877730190754, 190.0, 220.1877730190754 ],
                     "source": [ "obj-4", 0 ]
@@ -176,7 +173,6 @@
                 "patchline": {
                     "destination": [ "obj-4", 1 ],
                     "order": 0,
->>>>>>> axes-r-fuxd
                     "source": [ "obj-6", 0 ]
                 }
             },

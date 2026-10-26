@@ -60,141 +60,6 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-<<<<<<< HEAD
-                    "patcher": {
-                        "fileversion": 1,
-                        "appversion": {
-                            "major": 9,
-                            "minor": 1,
-                            "revision": 5,
-                            "architecture": "x64",
-                            "modernui": 1
-                        },
-                        "classnamespace": "box",
-                        "rect": [ 59.0, 106.0, 1000.0, 659.0 ],
-                        "boxes": [
-                            {
-                                "box": {
-                                    "id": "obj-76",
-                                    "maxclass": "message",
-                                    "numinlets": 2,
-                                    "numoutlets": 1,
-                                    "outlettype": [ "" ],
-                                    "patching_rect": [ 584.0, 177.0, 29.5, 22.0 ],
-                                    "text": "6"
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-61",
-                                    "maxclass": "message",
-                                    "numinlets": 2,
-                                    "numoutlets": 1,
-                                    "outlettype": [ "" ],
-                                    "patching_rect": [ 584.0, 223.0, 49.0, 22.0 ],
-                                    "text": "data $1"
-                                }
-                            },
-                            {
-                                "box": {
-                                    "fontname": "Arial",
-                                    "fontsize": 11.600006,
-                                    "id": "obj-41",
-                                    "linecount": 2,
-                                    "maxclass": "message",
-                                    "numinlets": 2,
-                                    "numoutlets": 1,
-                                    "outlettype": [ "" ],
-                                    "patching_rect": [ 316.0, 188.0, 60.0, 35.0 ],
-                                    "text": ";\r\ndsp start"
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-75",
-                                    "maxclass": "message",
-                                    "numinlets": 2,
-                                    "numoutlets": 1,
-                                    "outlettype": [ "" ],
-                                    "patching_rect": [ 318.0, 107.0, 55.0, 22.0 ],
-                                    "text": "pd~ stop"
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-71",
-                                    "maxclass": "message",
-                                    "numinlets": 2,
-                                    "numoutlets": 1,
-                                    "outlettype": [ "" ],
-                                    "patching_rect": [ 483.0, 141.0, 413.0, 22.0 ],
-                                    "text": "pd~ start C:/Users/weewee/dev/wearable-motion-controller/max/led-send.pd"
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-68",
-                                    "maxclass": "message",
-                                    "numinlets": 2,
-                                    "numoutlets": 1,
-                                    "outlettype": [ "" ],
-                                    "patching_rect": [ 393.0, 107.0, 336.0, 22.0 ],
-                                    "text": "pd~ pddir C:/Users/weewee/scoop/apps/pure-data/current/bin"
-                                }
-                            },
-                            {
-                                "box": {
-                                    "id": "obj-65",
-                                    "maxclass": "newobj",
-                                    "numinlets": 1,
-                                    "numoutlets": 0,
-                                    "patching_rect": [ 483.0, 294.0, 40.0, 22.0 ],
-                                    "text": "pd~"
-                                }
-                            }
-                        ],
-                        "lines": [
-                            {
-                                "patchline": {
-                                    "destination": [ "obj-65", 0 ],
-                                    "source": [ "obj-41", 0 ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "destination": [ "obj-65", 0 ],
-                                    "source": [ "obj-61", 0 ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "destination": [ "obj-65", 0 ],
-                                    "source": [ "obj-68", 0 ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "destination": [ "obj-65", 0 ],
-                                    "source": [ "obj-71", 0 ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "destination": [ "obj-65", 0 ],
-                                    "source": [ "obj-75", 0 ]
-                                }
-                            },
-                            {
-                                "patchline": {
-                                    "destination": [ "obj-61", 0 ],
-                                    "source": [ "obj-76", 0 ]
-                                }
-                            }
-                        ]
-                    },
-                    "patching_rect": [ 1191.0, 215.0, 32.0, 22.0 ],
-                    "text": "p pd"
-=======
                     "patching_rect": [ 1075.2065519690514, 298.69281989336014, 311.11112093925476, 34.0 ],
                     "text": "1 float: the acceleration vector (with gravity subtracted) of the 3 planar acceleration axes"
                 }
@@ -208,7 +73,6 @@
                     "outlettype": [ "float" ],
                     "patching_rect": [ 933.9869576096535, 328.7581803202629, 54.0, 22.0 ],
                     "text": "unpack f"
->>>>>>> axes-r-fuxd
                 }
             },
             {
@@ -2387,7 +2251,7 @@
                 "box": {
                     "comment": "",
                     "id": "obj-22",
-                    "index": 3,
+                    "index": 0,
                     "maxclass": "inlet",
                     "numinlets": 0,
                     "numoutlets": 1,
@@ -2670,7 +2534,7 @@
                 "box": {
                     "comment": "",
                     "id": "obj-12",
-                    "index": 2,
+                    "index": 0,
                     "maxclass": "outlet",
                     "numinlets": 1,
                     "numoutlets": 0,
@@ -2681,7 +2545,7 @@
                 "box": {
                     "comment": "",
                     "id": "obj-11",
-                    "index": 1,
+                    "index": 0,
                     "maxclass": "outlet",
                     "numinlets": 1,
                     "numoutlets": 0,
@@ -2702,11 +2566,11 @@
                 "box": {
                     "comment": "",
                     "id": "obj-6",
-                    "index": 2,
+                    "index": 0,
                     "maxclass": "inlet",
                     "numinlets": 0,
                     "numoutlets": 1,
-                    "outlettype": [ "bang" ],
+                    "outlettype": [ "" ],
                     "patching_rect": [ 380.70175075531006, 57.01754331588745, 30.0, 30.0 ]
                 }
             },
@@ -2724,11 +2588,11 @@
                 "box": {
                     "comment": "",
                     "id": "obj-3",
-                    "index": 1,
+                    "index": 0,
                     "maxclass": "inlet",
                     "numinlets": 0,
                     "numoutlets": 1,
-                    "outlettype": [ "int" ],
+                    "outlettype": [ "" ],
                     "patching_rect": [ 222.0, 52.0, 30.0, 30.0 ]
                 }
             },
@@ -3399,6 +3263,7 @@
                     "source": [ "obj-9", 0 ]
                 }
             }
-        ]
+        ],
+        "autosave": 0
     }
 }
