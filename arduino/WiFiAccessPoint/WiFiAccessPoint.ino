@@ -222,7 +222,7 @@ void StopSending() {
 
 void SendData(float accel_x, float accel_y, float accel_z, float gyro_x, float gyro_y, float gyro_z) { // send data as one blob
   float vector = CalculatePythagoreanVector(accel_x, accel_y, accel_z) - vector_offset;
-  vector_velocity = vector_velocity + vector * 30; // calc velocity from equation of motion using 30 ms time frame (that's our delay time so it'll be close enough)
+  vector_velocity = max(0, vector_velocity + vector * 30); // calc velocity from equation of motion using 30 ms time frame (that's our delay time so it'll be close enough). also we don't want negative velocity values
 
   osc.sendMessage("/imu/accel", "ffffff", (float) accel_x, (float) accel_y, (float) accel_z, (float) gyro_x, (float) gyro_y, (float) gyro_z); // send raw acceleration data on all 3 axes
   osc.sendMessage("/imu/accel/vector", "f", (float) vector); // send calculated vector
