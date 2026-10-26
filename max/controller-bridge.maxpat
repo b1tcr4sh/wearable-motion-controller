@@ -13,11 +13,65 @@
         "boxes": [
             {
                 "box": {
+                    "id": "obj-77",
+                    "linecount": 2,
+                    "maxclass": "comment",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patching_rect": [ 1062.6984291672707, 369.8412755727768, 150.0, 34.0 ],
+                    "text": "scale to -100 - 100 for ease of use"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-75",
+                    "linecount": 2,
+                    "maxclass": "comment",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patching_rect": [ 1303.1746233701706, 332.88889414072037, 150.0, 34.0 ],
+                    "text": "might need to be scaled, but should be m/s"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-65",
+                    "maxclass": "newobj",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patching_rect": [ 1285.2941712737083, 400.00000619888306, 132.0, 22.0 ],
+                    "text": "s planar-velocity-vector"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-61",
+                    "linecount": 2,
+                    "maxclass": "comment",
+                    "numinlets": 1,
+                    "numoutlets": 0,
+                    "patching_rect": [ 1285.2941712737083, 251.76471638679504, 150.0, 34.0 ],
+                    "text": "1 float: running velocity vector of the 3 planar axes"
+                }
+            },
+            {
+                "box": {
+                    "id": "obj-41",
+                    "maxclass": "newobj",
+                    "numinlets": 2,
+                    "numoutlets": 2,
+                    "outlettype": [ "", "" ],
+                    "patching_rect": [ 1285.2941712737083, 298.69281989336014, 141.0, 22.0 ],
+                    "text": "route /imu/velocity/vector"
+                }
+            },
+            {
+                "box": {
                     "id": "obj-73",
                     "maxclass": "newobj",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 933.9869576096535, 482.85715436935425, 120.0, 22.0 ],
+                    "patching_rect": [ 933.9869576096535, 400.00000619888306, 120.0, 22.0 ],
                     "text": "s planar-accel-vector"
                 }
             },
@@ -28,7 +82,7 @@
                     "numinlets": 0,
                     "numoutlets": 1,
                     "outlettype": [ "" ],
-                    "patching_rect": [ 1029.7012456059456, 365.71429443359375, 91.0, 22.0 ],
+                    "patching_rect": [ 1030.0187051296234, 338.88889414072037, 91.0, 22.0 ],
                     "text": "r smoothing-ms"
                 }
             },
@@ -49,7 +103,7 @@
                     "numinlets": 2,
                     "numoutlets": 1,
                     "outlettype": [ "" ],
-                    "patching_rect": [ 933.9869576096535, 411.42858123779297, 115.0, 22.0 ],
+                    "patching_rect": [ 933.9869576096535, 369.8412755727768, 115.0, 22.0 ],
                     "text": "scalensmooth-accel"
                 }
             },
@@ -60,19 +114,8 @@
                     "maxclass": "comment",
                     "numinlets": 1,
                     "numoutlets": 0,
-                    "patching_rect": [ 1075.2065519690514, 298.69281989336014, 311.11112093925476, 34.0 ],
-                    "text": "1 float: the acceleration vector (with gravity subtracted) of the 3 planar acceleration axes"
-                }
-            },
-            {
-                "box": {
-                    "id": "obj-65",
-                    "maxclass": "newobj",
-                    "numinlets": 1,
-                    "numoutlets": 1,
-                    "outlettype": [ "float" ],
-                    "patching_rect": [ 933.9869576096535, 328.7581803202629, 54.0, 22.0 ],
-                    "text": "unpack f"
+                    "patching_rect": [ 934.1176860332489, 251.76471638679504, 311.11112093925476, 34.0 ],
+                    "text": "1 float: the acceleration vector (with gravity subtracted) of the 3 planar axes in m/s^2"
                 }
             },
             {
@@ -2809,7 +2852,15 @@
             {
                 "patchline": {
                     "destination": [ "obj-17", 0 ],
-                    "order": 1,
+                    "order": 2,
+                    "source": [ "obj-1", 0 ]
+                }
+            },
+            {
+                "patchline": {
+                    "destination": [ "obj-41", 0 ],
+                    "midpoints": [ 231.5, 292.6315894126892, 1294.7941712737083, 292.6315894126892 ],
+                    "order": 0,
                     "source": [ "obj-1", 0 ]
                 }
             },
@@ -2817,7 +2868,7 @@
                 "patchline": {
                     "destination": [ "obj-55", 0 ],
                     "midpoints": [ 231.5, 292.7631551027298, 943.4869576096535, 292.7631551027298 ],
-                    "order": 0,
+                    "order": 1,
                     "source": [ "obj-1", 0 ]
                 }
             },
@@ -3083,6 +3134,12 @@
             },
             {
                 "patchline": {
+                    "destination": [ "obj-65", 0 ],
+                    "source": [ "obj-41", 0 ]
+                }
+            },
+            {
+                "patchline": {
                     "destination": [ "obj-46", 0 ],
                     "source": [ "obj-42", 0 ]
                 }
@@ -3109,7 +3166,7 @@
             },
             {
                 "patchline": {
-                    "destination": [ "obj-65", 0 ],
+                    "destination": [ "obj-69", 0 ],
                     "source": [ "obj-55", 0 ]
                 }
             },
@@ -3208,12 +3265,6 @@
                     "destination": [ "obj-70", 0 ],
                     "order": 0,
                     "source": [ "obj-62", 0 ]
-                }
-            },
-            {
-                "patchline": {
-                    "destination": [ "obj-69", 0 ],
-                    "source": [ "obj-65", 0 ]
                 }
             },
             {
