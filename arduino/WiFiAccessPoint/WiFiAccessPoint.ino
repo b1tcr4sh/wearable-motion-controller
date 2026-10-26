@@ -31,6 +31,7 @@ const unsigned int destPort = 12000;
 bool accepting = false;
 
 float vector_offset = 0;
+float vector_velocity = 0;
 
 bool sentData = false;
 
@@ -221,9 +222,11 @@ void StopSending() {
 
 void SendData(float accel_x, float accel_y, float accel_z, float gyro_x, float gyro_y, float gyro_z) { // send data as one blob
   float vector = CalculatePythagoreanVector(accel_x, accel_y, accel_z) - vector_offset;
+  vector_velocity = vector_velocity + vector * 30; // calc velocity from equation of motion using 30 ms time frame (that's our delay time so it'll be close enough)
 
   osc.sendMessage("/imu/accel", "ffffff", (float) accel_x, (float) accel_y, (float) accel_z, (float) gyro_x, (float) gyro_y, (float) gyro_z); // send raw acceleration data on all 3 axes
   osc.sendMessage("/imu/accel/vector", "f", (float) vector); // send calculated vector
+  osc.sendMessage("/imu/velocity/vector", "f", (float) vector_velocity);
 
 }
 
@@ -244,7 +247,8 @@ void Calibrate() { // remove gravity from vector measurement (idk how to do this
     delay(5);
   }
 
-  vector_offset = vector_sum / 200;
+  vector_offset = vector_sum / 200; // average these values to remove gravity
+  vector_velocity = 0; // reset velocity to 0
   Serial.println("Done!");
 }
 
