@@ -5,6 +5,8 @@
 #include <MicroOscUdp.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
+#include "I2Cdev.h"
+#include "MPU6050_6Axis_MotionApps20.h"
 #include <Wire.h>
 #include <Arduino.h>
 #include <FastLED.h>
