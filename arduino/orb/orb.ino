@@ -29,6 +29,8 @@ void setup() {
 }
 
 void loop() {
+  RegisterEventHandler();
+
   float accelx, accely, accelz, gyrox, gyroy, gyroz, vector, vector_delta, vector_velocity;
   GetImuData(accelx, accely, accelz, gyrox, gyroy, gyroz, vector, vector_delta, vector_velocity); // get data from imu
 
