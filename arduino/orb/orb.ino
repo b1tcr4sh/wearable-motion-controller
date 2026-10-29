@@ -59,6 +59,29 @@ void DMPDataReady() {
   MPUInterrupt = true;
 }
 
+/*--------------------calibration values--------------------*/
+const int usDelay = 3150; // Delay in ms to hold the sampling at 200Hz
+const int NFast = 1000; // Number of quick readings for averaging, the higher the better
+const int NSlow = 10000; // Number of slow readings for averaging, the higher the better
+const int LinesBetweenHeaders = 5;
+
+const int iAx = 0;
+const int iAy = 1;
+const int iAz = 2;
+const int iGx = 3;
+const int iGy = 4;
+const int iGz = 5;
+
+int LowValue[6];
+int HighValue[6];
+int Smoothed[6];
+int LowOffset[6];
+int HighOffset[6];
+int Target[6];
+int LinesOut;
+int N;
+int i;
+
 
 bool accepting = false;
 
@@ -160,7 +183,7 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
   }
 
   if (mes.checkOscAddress("/imu/calibrate")) {
-    // Calibrate();
+    CalibrateAxes();
   }
 
   if (mes.checkOscAddressAndTypeTags("/led/set", "iiiii")) {
@@ -347,3 +370,209 @@ float GetVelocity(float vec) {
 float CalculatePythagoreanVector(float accel_x, float accel_y, float accel_z) {
   return sqrt(pow(accel_x, 2) + pow(accel_y, 2) + pow(accel_z, 2)); // sqrt(x^2 + y^2 + z^2) pythagorean theorem. Calculates a raw vector of acceleration
 }
+
+void CalibrateAxes() {
+  
+  Serial.println("\nPID tuning Each Dot = 100 readings");
+  /*
+  PID tuning (actually PI) works like this: changing the offset in the MPU6050 gives instant results, 
+  allowing us to use the Proportional and Integral parts of the PID to find the ideal offsets. 
+  The Integral uses the error from the set point (which is zero) and adds a fraction of this error to 
+  the integral value. Each reading reduces the error towards the desired offset. The greater 
+  the error, the more we adjust the integral value. 
+  
+  The Proportional part helps by filtering out noise from the integral calculation. The Derivative part is 
+  not used due to noise and the sensor being stationary. With the noise removed, the integral value stabilizes 
+  after about 600 readings. At the end of each set of 100 readings, the integral value is used for the actual 
+  offsets, and the last proportional reading is ignored because it reacts to any noise.
+  */
+  Serial.println("\nXAccel\t\tYAccel\t\tZAccel\t\tXGyro\t\tYGyro\t\tZGyro");
+  mpu_dmp.CalibrateAccel(6);
+  mpu_dmp.CalibrateGyro(6);
+  Serial.println("\n600 Readings");
+  mpu_dmp.PrintActiveOffsets();
+  mpu_dmp.CalibrateAccel(1);
+  mpu_dmp.CalibrateGyro(1);
+  Serial.println("700 Total Readings");
+  mpu_dmp.PrintActiveOffsets();
+  mpu_dmp.CalibrateAccel(1);
+  mpu_dmp.CalibrateGyro(1);
+  Serial.println("800 Total Readings");
+  mpu_dmp.PrintActiveOffsets();
+  mpu_dmp.CalibrateAccel(1);
+  mpu_dmp.CalibrateGyro(1);
+  Serial.println("900 Total Readings");
+  mpu_dmp.PrintActiveOffsets();
+  mpu_dmp.CalibrateAccel(1);
+  mpu_dmp.CalibrateGyro(1);
+  Serial.println("1000 Total Readings");
+  mpu_dmp.PrintActiveOffsets();
+  Serial.println("\nAny of the above offsets will work nicely \n\nProving the PID with other method:");
+
+  for (i = iAx; i <= iGz; i++) { 
+    Target[i] = 0; // Fix for ZAccel 
+    HighOffset[i] = 0;
+    LowOffset[i] = 0;
+  } 
+  Target[iAz] = 16384; // Set the taget for Z axes
+  SetAveraging(NFast); // Fast averaging
+  PullBracketsOut();
+  PullBracketsIn();
+  Serial.println("-------------- DONE --------------");
+}
+
+void SetAveraging(int NewN) {
+  N = NewN;
+  Serial.print("\nAveraging ");
+  Serial.print(N);
+  Serial.println(" readings each time");
+}
+
+void PullBracketsOut() {
+  boolean Done = false;
+  int NextLowOffset[6];
+  int NextHighOffset[6];
+
+  Serial.println("Expanding:");
+  ForceHeader();
+
+  while (!Done) {
+    Done = true;
+    SetOffsets(LowOffset); //Set low offsets
+    GetSmoothed();
+    for (i = 0; i <= 5; i++) { // Get low values
+      LowValue[i] = Smoothed[i];
+      if (LowValue[i] >= Target[i]) {
+        Done = false;
+        NextLowOffset[i] = LowOffset[i] - 1000;
+      } 
+      else {
+        NextLowOffset[i] = LowOffset[i];
+      }
+    }
+    SetOffsets(HighOffset);
+    GetSmoothed();
+    for (i = 0; i <= 5; i++) { // Get high values
+      HighValue[i] = Smoothed[i];
+      if (HighValue[i] <= Target[i]) {
+        Done = false;
+        NextHighOffset[i] = HighOffset[i] + 1000;
+      } 
+      else {
+        NextHighOffset[i] = HighOffset[i];
+      }
+    } 
+    ShowProgress();
+    for (int i = 0; i <= 5; i++) {
+      LowOffset[i] = NextLowOffset[i]; 
+      HighOffset[i] = NextHighOffset[i];
+    }
+  }
+}
+
+void PullBracketsIn() {
+  boolean AllBracketsNarrow;
+  boolean StillWorking;
+  int NewOffset[6];
+
+  Serial.println("\nClosing in:");
+  AllBracketsNarrow = false;
+  ForceHeader();
+  StillWorking = true;
+  while (StillWorking) {
+    StillWorking = false;
+    if (AllBracketsNarrow && (N == NFast)) {
+      SetAveraging(NSlow);
+    } 
+    else {
+      AllBracketsNarrow = true;
+    }
+    for (int i = 0; i <= 5; i++) {
+      if (HighOffset[i] <= (LowOffset[i] + 1)) {
+        NewOffset[i] = LowOffset[i];
+      } 
+      else { // Binary search
+        StillWorking = true;
+        NewOffset[i] = (LowOffset[i] + HighOffset[i]) / 2;
+        if (HighOffset[i] > (LowOffset[i] + 10)) {
+          AllBracketsNarrow = false;
+        }
+      } 
+    }
+    SetOffsets(NewOffset);
+    GetSmoothed();
+    for (i = 0; i <= 5; i++) { // Closing in
+      if (Smoothed[i] > Target[i]) { // Use lower half
+        HighOffset[i] = NewOffset[i];
+        HighValue[i] = Smoothed[i];
+      } 
+      else { // Use upper half
+        LowOffset[i] = NewOffset[i];
+        LowValue[i] = Smoothed[i];
+      } 
+    }
+    ShowProgress();
+  } 
+} 
+
+void ForceHeader() {
+  LinesOut = 99;
+}
+
+/*Function to smooth the read values*/
+void GetSmoothed() {
+  int16_t RawValue[6];
+  long Sums[6];
+  for (i = 0; i <= 5; i++) {
+    Sums[i] = 0;
+  }
+  
+/* Get Sums*/
+  for (i = 1; i <= N; i++) { 
+    mpu_dmp.getMotion6( & RawValue[iAx], & RawValue[iAy], & RawValue[iAz], & RawValue[iGx], & RawValue[iGy], & RawValue[iGz]);
+    delayMicroseconds(usDelay);
+    for (int j = 0; j <= 5; j++){
+      Sums[j] = Sums[j] + RawValue[j];
+    }
+  } 
+  for (i = 0; i <= 5; i++) {
+    Smoothed[i] = (Sums[i] + N / 2) / N;
+  }
+} 
+
+/*Function for configure the oba=tained offsets*/
+void SetOffsets(int TheOffsets[6]) {
+  mpu_dmp.setXAccelOffset(TheOffsets[iAx]);
+  mpu_dmp.setYAccelOffset(TheOffsets[iAy]);
+  mpu_dmp.setZAccelOffset(TheOffsets[iAz]);
+  mpu_dmp.setXGyroOffset(TheOffsets[iGx]);
+  mpu_dmp.setYGyroOffset(TheOffsets[iGy]);
+  mpu_dmp.setZGyroOffset(TheOffsets[iGz]);
+}
+
+/*Print the progress of the reading averages, add formatting for better visualization*/
+void ShowProgress() {
+ /*Header*/
+  if (LinesOut >= LinesBetweenHeaders) { 
+    Serial.println("\t\tXAccel\t\t\tYAccel\t\t\t\tZAccel\t\t\tXGyro\t\t\tYGyro\t\t\tZGyro");
+    LinesOut = 0;
+  } 
+  Serial.print(' ');
+  for (i = 0; i <= 5; i++) {
+    Serial.print('[');
+    Serial.print(LowOffset[i]),
+    Serial.print(',');
+    Serial.print(HighOffset[i]);
+    Serial.print("] --> [");
+    Serial.print(LowValue[i]);
+    Serial.print(',');
+    Serial.print(HighValue[i]);
+    if (i == 5) {
+      Serial.println("]");
+    } 
+    else {
+      Serial.print("]\t");
+    }
+  }
+  LinesOut++;
+} 
