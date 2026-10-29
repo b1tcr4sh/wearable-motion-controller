@@ -86,14 +86,13 @@ void loop() {
 
   float x, y, z, yaw, pitch, roll, totalAccel;
   if (accepting) {
-    GetYawPitchRoll(yaw, pitch, roll);
-    GetRealAccel(x, y, z);
+    GetYawPitchRoll(x, y, z, yaw, pitch, roll);
     totalAccel = CalculatePythagoreanVector(x, y, z);
   }
   // float vel = GetVelocity(totalAccel);
   SendDmpData(x, y, z, yaw, pitch, roll, totalAccel);
 
-  delay(200);
+  delay(40);
 }
 
 void SetupLED() {
@@ -307,34 +306,29 @@ bool SetupMPU_DMP() {
   }
 }
 
-void GetYawPitchRoll(float &yaw, float &pitch, float &roll) {
-  if (DMPReady) {
+void GetYawPitchRoll(float &x, float &y, float &z, float &yaw, float &pitch, float &roll) {
+  if (mpu_dmp.dmpGetCurrentFIFOPacket(FIFOBuffer) && DMPReady) {
     mpu_dmp.dmpGetQuaternion(&q, FIFOBuffer);
     mpu_dmp.dmpGetGravity(&gravity, &q);
     mpu_dmp.dmpGetYawPitchRoll(ypr, &q, &gravity);
-
+    mpu_dmp.dmpGetAccel(&aa, FIFOBuffer);
+    mpu_dmp.dmpGetLinearAccel(&aaReal, &aa, &gravity);
+  
     yaw = ypr[0] * 180/M_PI;
     pitch = ypr[1] * 180/M_PI;
     roll = ypr[2] * 180/M_PI;
+
+    x = aaReal.x;
+    y = aaReal.y;
+    z = aaReal.z;
+
     Serial.print("ypr\t");
     Serial.print(ypr[0] * 180/M_PI);
     Serial.print("\t");
     Serial.print(ypr[1] * 180/M_PI);
     Serial.print("\t");
     Serial.println(ypr[2] * 180/M_PI);
-  }
-}
 
-void GetRealAccel(float &x, float &y, float &z) {
-  if (DMPReady) {
-    mpu_dmp.dmpGetQuaternion(&q, FIFOBuffer);
-    mpu_dmp.dmpGetAccel(&aa, FIFOBuffer);
-    mpu_dmp.dmpGetGravity(&gravity, &q);
-    mpu_dmp.dmpGetLinearAccel(&aaReal, &aa, &gravity);
-
-    x = aaReal.x;
-    y = aaReal.y;
-    z = aaReal.z;
     Serial.print("areal\t");
     Serial.print(aaReal.x);
     Serial.print("\t");
