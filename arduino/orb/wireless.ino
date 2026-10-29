@@ -82,12 +82,20 @@ void StopSending() {
   accepting = false;
 }
 
-void SendImuData(float accel_x, float accel_y, float accel_z, float gyro_x, float gyro_y, float gyro_z, float vector, float vector_delta, float vector_velocity) { // send data as one blob
+void SendRawImuData(float accel_x, float accel_y, float accel_z, float gyro_x, float gyro_y, float gyro_z, float vector, float vector_delta, float vector_velocity) { // send data as one blob
 
   if (accepting) {
     osc.sendMessage("/imu/accel", "ffffff", (float) accel_x, (float) accel_y, (float) accel_z, (float) gyro_x, (float) gyro_y, (float) gyro_z); // send raw acceleration data on all 3 axes
     osc.sendMessage("/imu/accel/vector", "ff", (float) vector, (float) vector_delta); // send calculated vector
     osc.sendMessage("/imu/velocity/vector", "f", (float) vector_velocity);
+  }
+}
+
+void SendDmpData(float x, float y, float z, float yaw, float pitch, float roll, float totalAccel, float vel) {
+  if (accepting) {
+    osc.sendMessage("/imu/accel", "ffffff", (float) x, (float) y, (float) z, (float) yaw, (float) pitch, (float) roll); // send raw acceleration data on all 3 axes
+    osc.sendMessage("/imu/accel/vector", "ff", (float) totalAccel, (float) 0); // send calculated vector
+    osc.sendMessage("/imu/velocity/vector", "f", (float) vel);
   }
 }
 

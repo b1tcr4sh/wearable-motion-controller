@@ -17,13 +17,13 @@
 const char *ssid = "orbfi";
 const char *password = "eightchars";  
 
-
 void setup() {
   Serial.begin(115200);
   Serial.println();
 
   SetupLED();
-  SetupMPU();
+  // SetupMPU();
+  SetupMPU_DMP();
   SetupWIFI();
 
   delay(5000);
@@ -33,10 +33,18 @@ void setup() {
 void loop() {
   RegisterEventHandler();
 
-  float accelx, accely, accelz, gyrox, gyroy, gyroz, vector, vector_delta, vector_velocity;
-  GetImuData(accelx, accely, accelz, gyrox, gyroy, gyroz, vector, vector_delta, vector_velocity); // get data from imu
+  // float accelx, accely, accelz, gyrox, gyroy, gyroz, vector, vector_delta, vector_velocity;
+  // GetRawImuData(accelx, accely, accelz, gyrox, gyroy, gyroz, vector, vector_delta, vector_velocity); // get data from imu
 
-  SendImuData(accelx, accely, accelz, gyrox, gyroy, gyroz, vector, vector_delta, vector_velocity); // attempt to send imu data over osc
+  // SendRawImuData(accelx, accely, accelz, gyrox, gyroy, gyroz, vector, vector_delta, vector_velocity); // attempt to send imu data over osc
+
+
+  float x, y, z, yaw, pitch, roll;
+  GetYawPitchRoll(yaw, pitch, roll);
+  GetRealAccel(x, y, z);
+  float totalAccel = CalculatePythagoreanVector(x, y, z);
+  float vel = GetVelocity(totalAccel);
+  SendDmpData(x, y, z, yaw, pitch, roll, totalAccel, vel);
 
   delay(30);
 }

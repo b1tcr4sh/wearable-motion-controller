@@ -6,7 +6,7 @@ float vector_velocity = 0;
 float prev_vector = 0;
 
 
-void GetImuData(float &accelx, float &accely, float &accelz, float &gyrox, float &gyroy, float &gyroz, float &vector, float &vector_delta, float &vector_velocity) {  
+void GetRawImuData(float &accelx, float &accely, float &accelz, float &gyrox, float &gyroy, float &gyroz, float &vector, float &vector_delta, float &vector_velocity) {  
   sensors_event_t a, g, t;
   mpu.getEvent(&a, &g, &t);
 

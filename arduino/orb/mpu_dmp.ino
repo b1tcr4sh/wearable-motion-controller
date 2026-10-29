@@ -2,6 +2,9 @@
 // and https://github.com/ElectronicCats/mpu6050/tree/master/examples/IMU_Zero
 
 MPU6050 mpu_dmp; 
+int const INTERRUPT_PIN = 2;  // Define the interruption #0 pin
+
+float velocity_vec = 0;
 
 /*---MPU6050 Control/Status Variables---*/
 bool DMPReady = false;  // Set true if DMP init was successful
@@ -94,23 +97,32 @@ bool SetupMPU_DMP() {
 }
 
 void GetYawPitchRoll(float &yaw, float &pitch, float &roll) {
-  mpu_dmp.dmpGetQuaternion(&q, FIFOBuffer);
-  mpu_dmp.dmpGetGravity(&gravity, &q);
-  mpu_dmp.dmpGetYawPitchRoll(ypr, &q, &gravity);
+  if (DMPReady) {
+    mpu_dmp.dmpGetQuaternion(&q, FIFOBuffer);
+    mpu_dmp.dmpGetGravity(&gravity, &q);
+    mpu_dmp.dmpGetYawPitchRoll(ypr, &q, &gravity);
 
-  yaw = ypr[0] * 180/M_PI;
-  pitch = ypr[1] * 180/M_PI;
-  roll = ypr[2] * 180/M_PI;
+    yaw = ypr[0] * 180/M_PI;
+    pitch = ypr[1] * 180/M_PI;
+    roll = ypr[2] * 180/M_PI;
+  }
 }
 
 void GetRealAccel(float &x, float &y, float &z) {
-  mpu_dmp.dmpGetQuaternion(&q, FIFOBuffer);
-  mpu_dmp.dmpGetAccel(&aa, FIFOBuffer);
-  mpu_dmp.dmpGetGravity(&gravity, &q);
-  mpu_dmp.dmpGetLinearAccel(&aaReal, &aa, &gravity);
+  if (DMPReady) {
+    mpu_dmp.dmpGetQuaternion(&q, FIFOBuffer);
+    mpu_dmp.dmpGetAccel(&aa, FIFOBuffer);
+    mpu_dmp.dmpGetGravity(&gravity, &q);
+    mpu_dmp.dmpGetLinearAccel(&aaReal, &aa, &gravity);
 
-  x = aaReal.x;
-  y = aaReal.y;
-  z = aaReal.z;
+    x = aaReal.x;
+    y = aaReal.y;
+    z = aaReal.z;
+  }
 }
 
+float GetVelocity(float vec) {
+  if (DMPReady) {
+    velocity_vec = max(0, velocity_vec + vec * 30);
+  }
+}
