@@ -373,6 +373,8 @@ float CalculatePythagoreanVector(float accel_x, float accel_y, float accel_z) {
 
 void CalibrateAxes() {
   
+  osc.sendMessage("/imu/calibrate/status", "i", 1);
+
   Serial.println("\nPID tuning Each Dot = 100 readings");
   /*
   PID tuning (actually PI) works like this: changing the offset in the MPU6050 gives instant results, 
@@ -419,6 +421,8 @@ void CalibrateAxes() {
   PullBracketsOut();
   PullBracketsIn();
   Serial.println("-------------- DONE --------------");
+
+  osc.sendMessage("/imu/calibrate/status", "i", 0);
 }
 
 void SetAveraging(int NewN) {
