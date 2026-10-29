@@ -84,14 +84,16 @@ void loop() {
   // SendRawImuData(accelx, accely, accelz, gyrox, gyroy, gyroz, vector, vector_delta, vector_velocity); // attempt to send imu data over osc
 
 
-  // float x, y, z, yaw, pitch, roll;
-  // GetYawPitchRoll(yaw, pitch, roll);
-  // GetRealAccel(x, y, z);
-  // float totalAccel = CalculatePythagoreanVector(x, y, z);
+  float x, y, z, yaw, pitch, roll, totalAccel;
+  if (accepting) {
+    GetYawPitchRoll(yaw, pitch, roll);
+    GetRealAccel(x, y, z);
+    totalAccel = CalculatePythagoreanVector(x, y, z);
+  }
   // float vel = GetVelocity(totalAccel);
-  // SendDmpData(x, y, z, yaw, pitch, roll, totalAccel, vel);
+  SendDmpData(x, y, z, yaw, pitch, roll, totalAccel);
 
-  delay(30);
+  delay(200);
 }
 
 void SetupLED() {
@@ -219,11 +221,11 @@ void SendRawImuData(float accel_x, float accel_y, float accel_z, float gyro_x, f
   }
 }
 
-void SendDmpData(float x, float y, float z, float yaw, float pitch, float roll, float totalAccel, float vel) {
+void SendDmpData(float x, float y, float z, float yaw, float pitch, float roll, float totalAccel) {
   if (accepting) {
     osc.sendMessage("/imu/accel", "ffffff", (float) x, (float) y, (float) z, (float) yaw, (float) pitch, (float) roll); // send raw acceleration data on all 3 axes
     osc.sendMessage("/imu/accel/vector", "ff", (float) totalAccel, (float) 0); // send calculated vector
-    osc.sendMessage("/imu/velocity/vector", "f", (float) vel);
+    // osc.sendMessage("/imu/velocity/vector", "f", (float) vel);
   }
 }
 
@@ -266,17 +268,17 @@ bool SetupMPU_DMP() {
   devStatus = mpu_dmp.dmpInitialize();
 
   /* Supply your gyro offsets here, scaled for min sensitivity */
-  mpu_dmp.setXGyroOffset(0);
-  mpu_dmp.setYGyroOffset(0);
-  mpu_dmp.setZGyroOffset(0);
-  mpu_dmp.setXAccelOffset(0);
-  mpu_dmp.setYAccelOffset(0);
-  mpu_dmp.setZAccelOffset(0);
+  mpu_dmp.setXGyroOffset(66);
+  mpu_dmp.setYGyroOffset(-598);
+  mpu_dmp.setZGyroOffset(4966);
+  mpu_dmp.setXAccelOffset(130);
+  mpu_dmp.setYAccelOffset(-54);
+  mpu_dmp.setZAccelOffset(74);
 
   /* Making sure it worked (returns 0 if so) */ 
   if (devStatus == 0) {
-    mpu_dmp.CalibrateAccel(6);  // Calibration Time: generate offsets and calibrate our MPU6050
-    mpu_dmp.CalibrateGyro(6);
+    // mpu_dmp.CalibrateAccel(6);  // Calibration Time: generate offsets and calibrate our MPU6050
+    // mpu_dmp.CalibrateGyro(6);
     Serial.println("These are the Active offsets: ");
     mpu_dmp.PrintActiveOffsets();
     Serial.println(F("Enabling DMP..."));   //Turning ON DMP
@@ -314,6 +316,12 @@ void GetYawPitchRoll(float &yaw, float &pitch, float &roll) {
     yaw = ypr[0] * 180/M_PI;
     pitch = ypr[1] * 180/M_PI;
     roll = ypr[2] * 180/M_PI;
+    Serial.print("ypr\t");
+    Serial.print(ypr[0] * 180/M_PI);
+    Serial.print("\t");
+    Serial.print(ypr[1] * 180/M_PI);
+    Serial.print("\t");
+    Serial.println(ypr[2] * 180/M_PI);
   }
 }
 
@@ -327,6 +335,12 @@ void GetRealAccel(float &x, float &y, float &z) {
     x = aaReal.x;
     y = aaReal.y;
     z = aaReal.z;
+    Serial.print("areal\t");
+    Serial.print(aaReal.x);
+    Serial.print("\t");
+    Serial.print(aaReal.y);
+    Serial.print("\t");
+    Serial.println(aaReal.z);
   }
 }
 
