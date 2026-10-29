@@ -9,7 +9,7 @@
             "modernui": 1
         },
         "classnamespace": "box",
-        "rect": [ 134.0, 134.0, 1468.0, 713.0 ],
+        "rect": [ 34.0, 77.0, 1468.0, 713.0 ],
         "boxes": [
             {
                 "box": {
@@ -73,7 +73,7 @@
                     "maxclass": "inlet",
                     "numinlets": 0,
                     "numoutlets": 1,
-                    "outlettype": [ "int" ],
+                    "outlettype": [ "" ],
                     "patching_rect": [ 330.935263633728, 153.0, 30.0, 30.0 ]
                 }
             },
@@ -130,8 +130,8 @@
                     "numinlets": 6,
                     "numoutlets": 1,
                     "outlettype": [ "" ],
-                    "patching_rect": [ 163.0, 157.0, 125.0, 22.0 ],
-                    "text": "scale -35 35 -100 100"
+                    "patching_rect": [ 163.0, 157.0, 165.0, 22.0 ],
+                    "text": "scale -10000 10000 -100 100"
                 }
             }
         ],
