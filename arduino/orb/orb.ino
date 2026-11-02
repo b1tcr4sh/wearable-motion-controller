@@ -123,11 +123,13 @@ void SetupLED() {
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
 }
 
+void SetAllBrightness(int brightness) {
+  FastLED.setBrightness(brightness);  
+}
+
 void SetAll(int red, int green, int blue, int brightness) {
-  for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = CRGB(red, green, blue);
-  }
-  FastLED.show();
+  fill_solid(leds, NUM_LEDS, CRGB(red, green, blue));
+  FastLED.setBrightness(brightness);  
 }
 
 void SetLed(int index, int red, int green, int blue, int brightness) {
@@ -136,10 +138,11 @@ void SetLed(int index, int red, int green, int blue, int brightness) {
 }
 
 void Blackout() {
-  for (int i = 0; i < NUM_LEDS; i++) {
-      fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));
-      FastLED.show();
-  }
+  // for (int i = 0; i < NUM_LEDS; i++) {
+  //     fill_solid(leds, NUM_LEDS, CRGB(0, 0, 0));
+  //     FastLED.show();
+  // }
+  FastLED.clear();
 }
 
 void SetState(const uint8_t* data, int len) {
@@ -211,6 +214,12 @@ void OscMessageParser(MicroOscMessage& mes) { //FUNCTION THAT WILL BE CALLED WHE
     int brightness = mes.nextAsInt(); // 0 - 100 ?
 
     SetAll(r, g, b, brightness);
+  }
+
+  if (mes.checkOscAddressAndTypeTags("/led/all/brightness", "i")) {
+    int brightness = mes.nextAsInt();
+
+    SetAllBrightness(brightness);
   }
 
   // receive blob at /led/set/state that contains some number of led states, each 3 bytes (R, G, B)
