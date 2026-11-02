@@ -12,7 +12,7 @@
 #include <FastLED.h>
 
 #define LED_PIN     25           // Data pin number
-#define NUM_LEDS    30          // Number of LEDs
+#define NUM_LEDS    25          // Number of LEDs
 #define LED_TYPE    WS2812B     // Your LED strip type
 #define COLOR_ORDER GRB         // Color channel order
 
@@ -90,6 +90,7 @@ void setup() {
   Serial.println();
 
   SetupLED();
+  Blackout(); // blackout the strip so we're not browning out when trying to connect -_-
   // SetupMPU();
   SetupMPU_DMP();
   SetupWIFI();
@@ -115,7 +116,7 @@ void loop() {
   // float vel = GetVelocity(totalAccel);
   SendDmpData(x, y, z, yaw, pitch, roll, totalAccel);
 
-  delay(40);
+  delay(50);
 }
 
 void SetupLED() {
