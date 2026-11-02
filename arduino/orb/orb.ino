@@ -125,11 +125,13 @@ void SetupLED() {
 
 void SetAllBrightness(int brightness) {
   FastLED.setBrightness(brightness);  
+  FastLED.show();
 }
 
 void SetAll(int red, int green, int blue, int brightness) {
   fill_solid(leds, NUM_LEDS, CRGB(red, green, blue));
   FastLED.setBrightness(brightness);  
+  FastLED.show();
 }
 
 void SetLed(int index, int red, int green, int blue, int brightness) {
@@ -143,6 +145,7 @@ void Blackout() {
   //     FastLED.show();
   // }
   FastLED.clear();
+  FastLED.show();
 }
 
 void SetState(const uint8_t* data, int len) {
